@@ -2,43 +2,61 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Internal Status</title>
+  <title>Internal Status • Trainline</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" href="/logo.svg" />
   <style>
-    :root {
-      --bg: #0b0d10; --card:#111418; --text:#e6e8ea; --muted:#a5abb3;
-      --ok:#1fa971; --degraded:#f0b429; --outage:#e45757; --unknown:#7a7f86;
-      --chip:#1b2026; --border:#222831;
+    /* Trainline-ish theme (verify exact mint in brand portal) */
+    :root{
+      --tl-mint:#3EB489;        /* “Trainline mint” (approx) */
+      --ink:#0b0d10;            /* near-black text on light bg */
+      --paper:#ffffff;
+      --muted:#5a6370;
+      --border:#e7ebef;
+      --ok:var(--tl-mint);
+      --degraded:#E6B800;
+      --outage:#E45757;
+      --unknown:#7a7f86;
+      --chip:#f6f8fa;
     }
-    * { box-sizing: border-box; }
-    body { margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
-           background: var(--bg); color: var(--text); }
-    header { padding: 24px; border-bottom: 1px solid var(--border); background: linear-gradient(180deg,#0b0d10,#0b0d10 60%, #0b0d10cc); position: sticky; top: 0; backdrop-filter: blur(6px); }
-    h1 { margin: 0 0 6px; font-size: 20px; }
-    .sub { color: var(--muted); font-size: 13px; }
-    .wrap { max-width: 980px; margin: 0 auto; padding: 16px 24px 40px; }
-    .banner { margin: 16px 0 24px; padding: 12px 14px; border: 1px solid var(--border); border-radius: 12px; background: #12161c; }
-    .controls { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
-    .chip { cursor: pointer; border:1px solid var(--border); background: var(--chip); padding: 8px 10px; border-radius: 999px; font-size: 12px; }
-    .chip.active { outline: 2px solid #2a313a; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
-    .card { background: var(--card); border:1px solid var(--border); border-radius: 14px; padding: 14px; display:flex; gap:10px; align-items:flex-start; }
-    .dot { width: 10px; height: 10px; border-radius: 50%; margin-top: 6px; flex: 0 0 auto; }
-    .dot.ok { background: var(--ok); }
-    .dot.degraded { background: var(--degraded); }
-    .dot.outage { background: var(--outage); }
-    .dot.unknown { background: var(--unknown); }
-    .name { font-weight: 600; }
-    .note { color: var(--muted); font-size: 12px; margin-top: 4px; }
-    .footer { color: var(--muted); font-size: 12px; margin-top: 20px; }
-    a { color: inherit; text-decoration: underline dotted; }
-    .hidden { display: none !important; }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--paper);color:var(--ink);
+         font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+    header{border-bottom:1px solid var(--border);background:#fdfefe;position:sticky;top:0;z-index:10}
+    .wrap{max-width:980px;margin:0 auto;padding:16px 24px 28px}
+    .brand{display:flex;align-items:center;gap:10px}
+    .brand img{height:22px;width:auto}
+    .brand h1{margin:0;font-size:18px}
+    .sub{color:var(--muted);font-size:12px;margin-top:4px}
+    .banner{margin:14px 0 18px;padding:10px 12px;border:1px solid var(--border);border-radius:12px;background:#f8fffb}
+    .controls{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 14px}
+    .chip{cursor:pointer;border:1px solid var(--border);background:var(--chip);padding:8px 10px;border-radius:999px;font-size:12px}
+    .chip.active{outline:2px solid #e2f7ef}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+    .card{border:1px solid var(--border);border-radius:14px;padding:14px;background:#fff;display:flex;gap:10px;align-items:flex-start}
+    .dot{width:10px;height:10px;border-radius:50%;margin-top:6px;flex:0 0 auto}
+    .dot.ok{background:var(--ok)} .dot.degraded{background:var(--degraded)}
+    .dot.outage{background:var(--outage)} .dot.unknown{background:var(--unknown)}
+    .name{font-weight:600}
+    .note{color:var(--muted);font-size:12px;margin-top:3px}
+    .src{margin-top:6px;font-size:12px}
+    a{color:#0c6; /* slightly darker mint for links */ text-decoration:underline dotted}
+    details.sources{margin-top:18px;border:1px solid var(--border);border-radius:12px;padding:12px;background:#fff}
+    details.sources summary{cursor:pointer;font-weight:600}
+    .sources ul{margin:8px 0 0 0;padding:0;list-style:none;columns:2;gap:12px}
+    .sources li{break-inside:avoid;padding:4px 0}
+    .hidden{display:none!important}
+    .cta{display:inline-flex;align-items:center;gap:8px;background:var(--tl-mint);color:#fff;
+         padding:8px 12px;border-radius:999px;border:none;font-weight:600}
   </style>
 </head>
 <body>
   <header>
     <div class="wrap">
-      <h1>Internal Status</h1>
+      <div class="brand">
+        <img src="/logo.svg" alt="Trainline logo" />
+        <h1>Internal Status</h1>
+      </div>
       <div class="sub" id="updated">Last updated: —</div>
     </div>
   </header>
@@ -52,78 +70,80 @@
       <button class="chip" data-filter="degraded">Degraded</button>
       <button class="chip" data-filter="ok">Operational</button>
       <button class="chip" data-filter="unknown">Unknown</button>
+      <a class="cta" href="/api/status" target="_blank" rel="noreferrer noopener">Raw JSON</a>
     </div>
 
     <section class="grid" id="cards"></section>
-    <div class="footer">Tip: update <code>services.json</code> in the repo. No servers, no drama.</div>
+
+    <!-- Sources drawer auto-populated from service links -->
+    <details class="sources" id="sourcesBox">
+      <summary>Sources used for this status</summary>
+      <ul id="sourcesList"></ul>
+    </details>
   </main>
 
   <script>
-    // Fallback data in case services.json isn't reachable
-    const SERVICES_FALLBACK = {
-      banner: "AWS incident impacting multiple third-party tools.",
-      lastUpdatedISO: new Date().toISOString(),
-      services: [
-        {"name":"Atlassian (Jira / Confluence)","status":"outage","note":"Vendor outage"},
-        {"name":"Zoom","status":"degraded","note":"Intermittent logins"},
-        {"name":"Ashby","status":"outage","note":"Vendor incident"},
-        {"name":"Metaview","status":"outage","note":"Downstream provider issue"},
-        {"name":"Slack","status":"degraded","note":"Slow message sends"},
-        {"name":"incident.io","status":"degraded","note":"Partial UI/API impact"},
-        {"name":"Amazon Connect auth","status":"outage","note":"Authentication affected"}
-      ]
-    };
-
-    async function loadData() {
-      try {
-        const res = await fetch('/api/status?ts=' + Date.now(), { cache: 'no-store' });
-        if (!res.ok) throw new Error('bad status');
-        return await res.json();
-      } catch {
-        return SERVICES_FALLBACK;
-      }
+    async function loadData(){
+      const res = await fetch('/api/status?ts='+Date.now(),{cache:'no-store'});
+      if(!res.ok) throw new Error('status fetch failed');
+      return await res.json();
     }
+    function statusClass(s){ return ['ok','degraded','outage','unknown'].includes(s)?s:'unknown' }
 
-    function statusClass(s){ return ['ok','degraded','outage','unknown'].includes(s) ? s : 'unknown'; }
-
-    function render(data) {
+    function render(data){
       const elCards = document.getElementById('cards');
       const elUpdated = document.getElementById('updated');
       const elBanner = document.getElementById('banner');
+      const elSourcesBox = document.getElementById('sourcesBox');
+      const elSourcesList = document.getElementById('sourcesList');
 
       elUpdated.textContent = 'Last updated: ' + new Date(data.lastUpdatedISO || Date.now()).toLocaleString();
       elBanner.textContent = data.banner || '';
 
+      // Cards
       elCards.innerHTML = '';
-      (data.services || []).forEach(svc => {
+      const links = new Map(); // name -> url (dedupe for Sources)
+      (data.services || []).forEach(svc=>{
         const card = document.createElement('article');
         card.className = `card item ${statusClass(svc.status)}`;
         card.dataset.status = statusClass(svc.status);
-
+        const linkHtml = svc.link ? `<div class="src">Source: <a href="${svc.link}" target="_blank" rel="noreferrer noopener">${new URL(svc.link).host}</a></div>` : '';
+        if(svc.link) links.set(svc.name, svc.link);
         card.innerHTML = `
           <div class="dot ${statusClass(svc.status)}" title="${statusClass(svc.status)}"></div>
           <div>
             <div class="name">${svc.link ? `<a href="${svc.link}" target="_blank" rel="noreferrer noopener">${svc.name}</a>` : svc.name}</div>
             <div class="note">${svc.note ? svc.note : ''}</div>
+            ${linkHtml}
           </div>
         `;
         elCards.appendChild(card);
       });
 
-      // filtering
-      document.querySelectorAll('#filters .chip').forEach(btn => {
-        btn.onclick = () => {
-          document.querySelectorAll('#filters .chip').forEach(x => x.classList.remove('active'));
+      // Filters
+      document.querySelectorAll('#filters .chip').forEach(btn=>{
+        btn.onclick=()=>{
+          document.querySelectorAll('#filters .chip').forEach(x=>x.classList.remove('active'));
           btn.classList.add('active');
-          const f = btn.dataset.filter;
-          document.querySelectorAll('.item').forEach(it => {
-            it.classList.toggle('hidden', f !== 'all' && it.dataset.status !== f);
+          const f=btn.dataset.filter;
+          document.querySelectorAll('.item').forEach(it=>{
+            it.classList.toggle('hidden', f!=='all' && it.dataset.status!==f);
           });
         };
       });
+
+      // Sources drawer
+      elSourcesList.innerHTML = '';
+      links.forEach((url, name)=>{
+        const li=document.createElement('li');
+        li.innerHTML = `<a href="${url}" target="_blank" rel="noreferrer noopener">${name}</a>`;
+        elSourcesList.appendChild(li);
+      });
+      elSourcesBox.open = false;
+      if(links.size===0){ elSourcesBox.classList.add('hidden'); } else { elSourcesBox.classList.remove('hidden'); }
     }
 
-    loadData().then(render);
+    loadData().then(render).catch(()=>{ document.getElementById('banner').textContent='Status temporarily unavailable.' });
   </script>
 </body>
 </html>

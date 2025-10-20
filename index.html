@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Internal Status</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg: #0b0d10; --card:#111418; --text:#e6e8ea; --muted:#a5abb3;
+      --ok:#1fa971; --degraded:#f0b429; --outage:#e45757; --unknown:#7a7f86;
+      --chip:#1b2026; --border:#222831;
+    }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+           background: var(--bg); color: var(--text); }
+    header { padding: 24px; border-bottom: 1px solid var(--border); background: linear-gradient(180deg,#0b0d10,#0b0d10 60%, #0b0d10cc); position: sticky; top: 0; backdrop-filter: blur(6px); }
+    h1 { margin: 0 0 6px; font-size: 20px; }
+    .sub { color: var(--muted); font-size: 13px; }
+    .wrap { max-width: 980px; margin: 0 auto; padding: 16px 24px 40px; }
+    .banner { margin: 16px 0 24px; padding: 12px 14px; border: 1px solid var(--border); border-radius: 12px; background: #12161c; }
+    .controls { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+    .chip { cursor: pointer; border:1px solid var(--border); background: var(--chip); padding: 8px 10px; border-radius: 999px; font-size: 12px; }
+    .chip.active { outline: 2px solid #2a313a; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+    .card { background: var(--card); border:1px solid var(--border); border-radius: 14px; padding: 14px; display:flex; gap:10px; align-items:flex-start; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; margin-top: 6px; flex: 0 0 auto; }
+    .dot.ok { background: var(--ok); }
+    .dot.degraded { background: var(--degraded); }
+    .dot.outage { background: var(--outage); }
+    .dot.unknown { background: var(--unknown); }
+    .name { font-weight: 600; }
+    .note { color: var(--muted); font-size: 12px; margin-top: 4px; }
+    .footer { color: var(--muted); font-size: 12px; margin-top: 20px; }
+    a { color: inherit; text-decoration: underline dotted; }
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <h1>Internal Status</h1>
+      <div class="sub" id="updated">Last updated: —</div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="banner" id="banner" aria-live="polite"></div>
+
+    <div class="controls" id="filters">
+      <button class="chip active" data-filter="all">All</button>
+      <button class="chip" data-filter="outage">Outage</button>
+      <button class="chip" data-filter="degraded">Degraded</button>
+      <button class="chip" data-filter="ok">Operational</button>
+      <button class="chip" data-filter="unknown">Unknown</button>
+    </div>
+
+    <section class="grid" id="cards"></section>
+    <div class="footer">Tip: update <code>services.json</code> in the repo. No servers, no drama.</div>
+  </main>
+
+  <script>
+    // Fallback data in case services.json isn't reachable
+    const SERVICES_FALLBACK = {
+      banner: "AWS incident impacting multiple third-party tools.",
+      lastUpdatedISO: new Date().toISOString(),
+      services: [
+        {"name":"Atlassian (Jira / Confluence)","status":"outage","note":"Vendor outage"},
+        {"name":"Zoom","status":"degraded","note":"Intermittent logins"},
+        {"name":"Ashby","status":"outage","note":"Vendor incident"},
+        {"name":"Metaview","status":"outage","note":"Downstream provider issue"},
+        {"name":"Slack","status":"degraded","note":"Slow message sends"},
+        {"name":"incident.io","status":"degraded","note":"Partial UI/API impact"},
+        {"name":"Amazon Connect auth","status":"outage","note":"Authentication affected"}
+      ]
+    };
+
+    async function loadData() {
+      try {
+        const res = await fetch('services.json?ts=' + Date.now(), {cache: 'no-store'});
+        if (!res.ok) throw new Error('bad status');
+        return await res.json();
+      } catch {
+        return SERVICES_FALLBACK;
+      }
+    }
+
+    function statusClass(s){ return ['ok','degraded','outage','unknown'].includes(s) ? s : 'unknown'; }
+
+    function render(data) {
+      const elCards = document.getElementById('cards');
+      const elUpdated = document.getElementById('updated');
+      const elBanner = document.getElementById('banner');
+
+      elUpdated.textContent = 'Last updated: ' + new Date(data.lastUpdatedISO || Date.now()).toLocaleString();
+      elBanner.textContent = data.banner || '';
+
+      elCards.innerHTML = '';
+      (data.services || []).forEach(svc => {
+        const card = document.createElement('article');
+        card.className = `card item ${statusClass(svc.status)}`;
+        card.dataset.status = statusClass(svc.status);
+
+        card.innerHTML = `
+          <div class="dot ${statusClass(svc.status)}" title="${statusClass(svc.status)}"></div>
+          <div>
+            <div class="name">${svc.link ? `<a href="${svc.link}" target="_blank" rel="noreferrer noopener">${svc.name}</a>` : svc.name}</div>
+            <div class="note">${svc.note ? svc.note : ''}</div>
+          </div>
+        `;
+        elCards.appendChild(card);
+      });
+
+      // filtering
+      document.querySelectorAll('#filters .chip').forEach(btn => {
+        btn.onclick = () => {
+          document.querySelectorAll('#filters .chip').forEach(x => x.classList.remove('active'));
+          btn.classList.add('active');
+          const f = btn.dataset.filter;
+          document.querySelectorAll('.item').forEach(it => {
+            it.classList.toggle('hidden', f !== 'all' && it.dataset.status !== f);
+          });
+        };
+      });
+    }
+
+    loadData().then(render);
+  </script>
+</body>
+</html>

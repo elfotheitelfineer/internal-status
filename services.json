@@ -1,0 +1,13 @@
+{
+  "banner": "AWS incident impacting multiple third-party tools.",
+  "lastUpdatedISO": "2025-10-20T08:30:00Z",
+  "services": [
+    { "name": "Atlassian (Jira / Confluence)", "status": "outage", "note": "Vendor outage" },
+    { "name": "Zoom", "status": "degraded", "note": "Intermittent logins" },
+    { "name": "Ashby", "status": "outage", "note": "Vendor incident" },
+    { "name": "Metaview", "status": "outage", "note": "Downstream provider issue" },
+    { "name": "Slack", "status": "degraded", "note": "Slow message sends" },
+    { "name": "incident.io", "status": "degraded", "note": "Partial UI/API impact" },
+    { "name": "Amazon Connect auth", "status": "outage", "note": "Authentication affected" }
+  ]
+}

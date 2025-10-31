@@ -1,0 +1,11 @@
+{
+  "items": [
+    {
+      "title": "VPN flaky on macOS 15",
+      "status": "investigating",
+      "updated": "2025-10-31T08:00:00Z",
+      "summary": "Intermittent disconnects every ~20 min. Workaround: switch to IKEv2.",
+      "link": "https://confluence/known-issues/vpn-macos15"
+    }
+  ]
+}

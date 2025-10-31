@@ -2,52 +2,83 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Internal Status • Trainline</title>
+  <title>Trainline • Tech Support</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="icon" href="/logo.svg" />
   <style>
-    /* Trainline-ish theme (verify exact mint in brand portal) */
     :root{
-      --tl-mint:#3EB489;        /* “Trainline mint” (approx) */
-      --ink:#0b0d10;            /* near-black text on light bg */
+      --mint:#3EB489;
+      --ink:#0b0d10;
       --paper:#ffffff;
       --muted:#5a6370;
       --border:#e7ebef;
-      --ok:var(--tl-mint);
+      --ok:var(--mint);
       --degraded:#E6B800;
       --outage:#E45757;
       --unknown:#7a7f86;
       --chip:#f6f8fa;
+      --card:#fff;
+      --hover:#f5f7fa;
     }
     *{box-sizing:border-box}
     body{margin:0;background:var(--paper);color:var(--ink);
          font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
-    header{border-bottom:1px solid var(--border);background:#fdfefe;position:sticky;top:0;z-index:10}
-    .wrap{max-width:980px;margin:0 auto;padding:16px 24px 28px}
+    a{color:#0c6;text-decoration:underline dotted}
+    header{border-bottom:1px solid var(--border);background:#fdfefe;position:sticky;top:0;z-index:20}
+    .wrap{max-width:1100px;margin:0 auto;padding:16px 24px}
     .brand{display:flex;align-items:center;gap:10px}
-    .brand img{height:22px;width:auto}
+    .brand img{height:22px}
     .brand h1{margin:0;font-size:18px}
+    nav.tabs{margin-top:12px;display:flex;gap:10px;flex-wrap:wrap}
+    .tab{appearance:none;border:1px solid var(--border);background:var(--chip);padding:8px 12px;border-radius:999px;cursor:pointer;font-weight:600}
+    .tab.active{outline:2px solid #e2f7ef}
+
+    /* Panels */
+    section{padding:18px 24px}
+    .panel{border-top:1px solid var(--border)}
+    .panel h2{margin:0 0 12px;font-size:16px}
+
+    /* Status area (kept from previous version) */
     .sub{color:var(--muted);font-size:12px;margin-top:4px}
     .banner{margin:14px 0 18px;padding:10px 12px;border:1px solid var(--border);border-radius:12px;background:#f8fffb}
     .controls{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 14px}
     .chip{cursor:pointer;border:1px solid var(--border);background:var(--chip);padding:8px 10px;border-radius:999px;font-size:12px}
     .chip.active{outline:2px solid #e2f7ef}
     .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
-    .card{border:1px solid var(--border);border-radius:14px;padding:14px;background:#fff;display:flex;gap:10px;align-items:flex-start}
+    .card{border:1px solid var(--border);border-radius:14px;padding:14px;background:var(--card);display:flex;gap:10px;align-items:flex-start}
+    .card:hover{background:var(--hover)}
     .dot{width:10px;height:10px;border-radius:50%;margin-top:6px;flex:0 0 auto}
     .dot.ok{background:var(--ok)} .dot.degraded{background:var(--degraded)}
     .dot.outage{background:var(--outage)} .dot.unknown{background:var(--unknown)}
     .name{font-weight:600}
     .note{color:var(--muted);font-size:12px;margin-top:3px}
     .src{margin-top:6px;font-size:12px}
-    a{color:#0c6; /* slightly darker mint for links */ text-decoration:underline dotted}
     details.sources{margin-top:18px;border:1px solid var(--border);border-radius:12px;padding:12px;background:#fff}
     details.sources summary{cursor:pointer;font-weight:600}
-    .sources ul{margin:8px 0 0 0;padding:0;list-style:none;columns:2;gap:12px}
+    .sources ul{margin:8px 0 0;padding:0;list-style:none;columns:2;gap:12px}
     .sources li{break-inside:avoid;padding:4px 0}
     .hidden{display:none!important}
-    .cta{display:inline-flex;align-items:center;gap:8px;background:var(--tl-mint);color:#fff;
-         padding:8px 12px;border-radius:999px;border:none;font-weight:600}
+
+    /* IT quick actions and tools */
+    .actions{display:flex;flex-wrap:wrap;gap:10px;margin:8px 0 14px}
+    .cta{display:inline-flex;align-items:center;gap:8px;background:var(--mint);color:#fff;
+         padding:10px 14px;border-radius:12px;border:none;font-weight:700;text-decoration:none}
+    .cta.secondary{background:#111;color:#fff}
+    .tools{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+    .tool{border:1px solid var(--border);border-radius:12px;padding:12px;background:#fff}
+    .tool:hover{background:var(--hover)}
+    .tool .tname{font-weight:700}
+    .tool .tdesc{font-size:12px;color:var(--muted);margin-top:4px}
+    .search{display:flex;gap:8px;align-items:center;margin:8px 0 14px}
+    .search input{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:10px}
+
+    /* Known issues */
+    .issues{display:grid;grid-template-columns:1fr;gap:10px}
+    .issue{border:1px solid var(--border);border-radius:12px;padding:12px;background:#fff}
+    .issue .meta{font-size:12px;color:var(--muted)}
+
+    footer{border-top:1px solid var(--border);margin-top:18px}
+    footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;font-size:12px;color:var(--muted)}
   </style>
 </head>
 <body>
@@ -55,54 +86,104 @@
     <div class="wrap">
       <div class="brand">
         <img src="/logo.svg" alt="Trainline logo" />
-        <h1>Internal Status</h1>
+        <h1>IT Hub & Status</h1>
       </div>
       <div class="sub" id="updated">Last updated: —</div>
+      <nav class="tabs" id="tabs">
+        <button class="tab active" data-target="#status">Status</button>
+        <button class="tab" data-target="#help">IT help</button>
+        <button class="tab" data-target="#runbooks">Runbooks</button>
+      </nav>
     </div>
   </header>
 
-  <main class="wrap">
-    <div class="banner" id="banner" aria-live="polite"></div>
+  <!-- STATUS PANEL -->
+  <section class="panel" id="status">
+    <div class="wrap">
+      <div class="banner" id="banner" aria-live="polite"></div>
+      <div class="controls" id="filters">
+        <button class="chip active" data-filter="all">All</button>
+        <button class="chip" data-filter="outage">Outage</button>
+        <button class="chip" data-filter="degraded">Degraded</button>
+        <button class="chip" data-filter="ok">Operational</button>
+        <button class="chip" data-filter="unknown">Unknown</button>
+        <a class="chip" href="/api/status" target="_blank" rel="noreferrer noopener">Raw JSON</a>
+      </div>
+      <section class="grid" id="cards"></section>
 
-    <div class="controls" id="filters">
-      <button class="chip active" data-filter="all">All</button>
-      <button class="chip" data-filter="outage">Outage</button>
-      <button class="chip" data-filter="degraded">Degraded</button>
-      <button class="chip" data-filter="ok">Operational</button>
-      <button class="chip" data-filter="unknown">Unknown</button>
-      <a class="cta" href="/api/status" target="_blank" rel="noreferrer noopener">Raw JSON</a>
+      <details class="sources" id="sourcesBox">
+        <summary>Sources used for this status</summary>
+        <ul id="sourcesList"></ul>
+      </details>
     </div>
+  </section>
 
-    <section class="grid" id="cards"></section>
+  <!-- HELP PANEL -->
+  <section class="panel hidden" id="help">
+    <div class="wrap">
+      <h2>Get help fast</h2>
+      <div class="actions">
+        <!-- Replace hrefs with your actual destinations -->
+        <a class="cta" href="https://incident.io" target="_blank" rel="noreferrer noopener">Report an incident</a>
+        <a class="cta" href="https://your-ticket-portal" target="_blank" rel="noreferrer noopener">Submit an IT ticket</a>
+        <a class="cta secondary" href="https://slack.com/app_redirect?channel=it-help" target="_blank" rel="noreferrer noopener">Join #it-help</a>
+        <a class="cta secondary" href="https://confluence/runbooks/status" target="_blank" rel="noreferrer noopener">Outage playbook</a>
+      </div>
 
-    <!-- Sources drawer auto-populated from service links -->
-    <details class="sources" id="sourcesBox">
-      <summary>Sources used for this status</summary>
-      <ul id="sourcesList"></ul>
-    </details>
-  </main>
+      <div class="search">
+        <input id="toolSearch" type="search" placeholder="Search tools (Slack, Zoom, Jira…)" aria-label="Search tools" />
+      </div>
+
+      <div class="tools" id="tools"></div>
+
+      <h2 style="margin-top:18px">Known issues</h2>
+      <div class="issues" id="issues"></div>
+    </div>
+  </section>
+
+  <!-- RUNBOOKS PANEL -->
+  <section class="panel hidden" id="runbooks">
+    <div class="wrap">
+      <h2>Runbooks</h2>
+      <div class="tools" id="runbookLinks"></div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="wrap">
+      <div>Built as static HTML + one JSON endpoint. Zero VMs, zero drama.</div>
+      <div><a href="/api/status" target="_blank" rel="noreferrer noopener">API</a></div>
+    </div>
+  </footer>
 
   <script>
-    async function loadData(){
-      const res = await fetch('/api/status?ts='+Date.now(),{cache:'no-store'});
-      if(!res.ok) throw new Error('status fetch failed');
-      return await res.json();
+    // ---------- Tabs ----------
+    document.getElementById('tabs').addEventListener('click', (e)=>{
+      const btn = e.target.closest('.tab'); if(!btn) return;
+      document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+      btn.classList.add('active');
+      const target = btn.dataset.target;
+      document.querySelectorAll('.panel').forEach(p=>p.classList.add('hidden'));
+      document.querySelector(target).classList.remove('hidden');
+      // focus heading for a11y
+      const h = document.querySelector(target+' h2'); if(h) h.focus?.();
+    });
+
+    // ---------- Status loader (keeps your existing behavior + fallback) ----------
+    async function loadStatus(){
+      try {
+        const r = await fetch('/api/status?ts='+Date.now(), { cache: 'no-store' });
+        if (r.ok) return await r.json();
+        throw new Error('bad status');
+      } catch {
+        const r2 = await fetch('services.json?ts='+Date.now(), { cache: 'no-store' });
+        if (r2.ok) return await r2.json();
+        throw new Error('both /api/status and services.json failed');
+      }
     }
     function statusClass(s){ return ['ok','degraded','outage','unknown'].includes(s)?s:'unknown' }
 
-    async function loadData(){
-  try {
-    const r = await fetch('/api/status?ts='+Date.now(), { cache: 'no-store' });
-    if (r.ok) return await r.json();
-    throw new Error('bad status '+r.status);
-  } catch {
-    const r2 = await fetch('services.json?ts='+Date.now(), { cache: 'no-store' });
-    if (r2.ok) return await r2.json();
-    throw new Error('both /api/status and services.json failed');
-  }
-}
-
-    function render(data){
+    function renderStatus(data){
       const elCards = document.getElementById('cards');
       const elUpdated = document.getElementById('updated');
       const elBanner = document.getElementById('banner');
@@ -112,9 +193,8 @@
       elUpdated.textContent = 'Last updated: ' + new Date(data.lastUpdatedISO || Date.now()).toLocaleString();
       elBanner.textContent = data.banner || '';
 
-      // Cards
       elCards.innerHTML = '';
-      const links = new Map(); // name -> url (dedupe for Sources)
+      const links = new Map();
       (data.services || []).forEach(svc=>{
         const card = document.createElement('article');
         card.className = `card item ${statusClass(svc.status)}`;
@@ -132,7 +212,6 @@
         elCards.appendChild(card);
       });
 
-      // Filters
       document.querySelectorAll('#filters .chip').forEach(btn=>{
         btn.onclick=()=>{
           document.querySelectorAll('#filters .chip').forEach(x=>x.classList.remove('active'));
@@ -144,18 +223,100 @@
         };
       });
 
-      // Sources drawer
       elSourcesList.innerHTML = '';
       links.forEach((url, name)=>{
         const li=document.createElement('li');
         li.innerHTML = `<a href="${url}" target="_blank" rel="noreferrer noopener">${name}</a>`;
         elSourcesList.appendChild(li);
       });
-      elSourcesBox.open = false;
-      if(links.size===0){ elSourcesBox.classList.add('hidden'); } else { elSourcesBox.classList.remove('hidden'); }
+      elSourcesBox.classList.toggle('hidden', links.size===0);
     }
 
-    loadData().then(render).catch(()=>{ document.getElementById('banner').textContent='Status temporarily unavailable.' });
+    // ---------- IT Tools grid ----------
+    const TOOL_LIST = [
+      // Update these URLs to your real ones
+      { name:'Jira', url:'https://your-jira', desc:'Project tracking' },
+      { name:'Confluence', url:'https://your-confluence', desc:'Documentation' },
+      { name:'Slack', url:'https://slack.com', desc:'Chat' },
+      { name:'Zoom', url:'https://zoom.us', desc:'Meetings' },
+      { name:'incident.io', url:'https://incident.io', desc:'Incidents & postmortems' },
+      { name:'Ashby', url:'https://app.ashbyhq.com', desc:'ATS' },
+      { name:'Metaview', url:'https://www.metaview.ai', desc:'Interview notes' },
+      { name:'Bob (HiBob)', url:'https://app.hibob.com', desc:'HRIS' },
+      { name:'Amazon Connect', url:'https://console.aws.amazon.com/connect', desc:'Contact center' },
+      { name:'SSO portal', url:'https://your-sso', desc:'Single sign-on' }
+    ];
+    function renderTools(){
+      const box = document.getElementById('tools');
+      box.innerHTML = '';
+      TOOL_LIST.forEach(t=>{
+        const a = document.createElement('a');
+        a.className = 'tool';
+        a.href = t.url; a.target = '_blank'; a.rel = 'noreferrer noopener';
+        a.dataset.name = (t.name+' '+t.desc).toLowerCase();
+        a.innerHTML = `<div class="tname">${t.name}</div><div class="tdesc">${t.desc}</div>`;
+        box.appendChild(a);
+      });
+    }
+    document.getElementById('toolSearch').addEventListener('input', (e)=>{
+      const q = e.target.value.trim().toLowerCase();
+      document.querySelectorAll('.tool').forEach(el=>{
+        el.classList.toggle('hidden', q && !el.dataset.name.includes(q));
+      });
+    });
+
+    // ---------- Known issues (tiny local JSON) ----------
+    async function loadIssues(){
+      try{
+        const r = await fetch('/known-issues.json?ts='+Date.now(), { cache:'no-store' });
+        if(!r.ok) throw new Error('no issues');
+        return await r.json();
+      } catch { return { items: [] }; }
+    }
+    function renderIssues(data){
+      const box = document.getElementById('issues');
+      box.innerHTML = '';
+      (data.items || []).forEach(it=>{
+        const el = document.createElement('article');
+        el.className = 'issue';
+        const when = it.updated ? new Date(it.updated).toLocaleString() : '';
+        el.innerHTML = `
+          <div class="tname">${it.title || 'Issue'}</div>
+          <div class="meta">${(it.status || 'open').toUpperCase()} • ${when}</div>
+          ${it.summary ? `<div class="tdesc" style="margin-top:6px">${it.summary}</div>` : ''}
+          ${it.link ? `<div style="margin-top:6px"><a href="${it.link}" target="_blank" rel="noreferrer noopener">Details</a></div>` : ''}
+        `;
+        box.appendChild(el);
+      });
+      if((data.items || []).length===0){
+        box.innerHTML = '<div class="issue"><div class="tdesc">No known issues.</div></div>';
+      }
+    }
+
+    // ---------- Runbooks ----------
+    const RUNBOOKS = [
+      { name:'Major outage playbook', url:'https://confluence/runbooks/major-outage' },
+      { name:'Slack down: comms plan', url:'https://confluence/runbooks/slack-outage' },
+      { name:'Laptop onboarding', url:'https://confluence/runbooks/laptop-onboarding' }
+    ];
+    function renderRunbooks(){
+      const box = document.getElementById('runbookLinks'); box.innerHTML = '';
+      RUNBOOKS.forEach(r=>{
+        const a = document.createElement('a');
+        a.className = 'tool'; a.href=r.url; a.target='_blank'; a.rel='noreferrer noopener';
+        a.innerHTML = `<div class="tname">${r.name}</div><div class="tdesc">Confluence</div>`;
+        box.appendChild(a);
+      });
+    }
+
+    // ---------- Init ----------
+    (async () => {
+      renderTools();
+      renderRunbooks();
+      const [statusData, issueData] = await Promise.all([loadStatus(), loadIssues()]);
+      renderStatus(statusData);
+      renderIssues(issueData);
+    })();
   </script>
 </body>
 </html>

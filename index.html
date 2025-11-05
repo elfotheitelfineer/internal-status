@@ -1,598 +1,235 @@
 <!doctype html>
-<html lang="en">
+<html lang="fr">
 <head>
   <meta charset="utf-8" />
-  <title>Trainline • TECHSUP</title>
+  <title>TECHSUP • Vendor Status</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="icon" href="/logo.svg" />
   <style>
     :root{
-      --mint:#00A88F;      /* Trainline brand */
+      --mint:#00A88F;      /* brand */
       --ink:#0b0d10;
       --paper:#ffffff;
       --muted:#5a6370;
       --border:#e7ebef;
-      --ok:var(--mint);
-      --degraded:#E6B800;
-      --outage:#E45757;
-      --unknown:#7a7f86;
-      --chip:#f6f8fa;
-      --card:#fff;
-      --hover:#f5f7fa;
-      --shadow:0 8px 24px rgba(0,0,0,.06);
+      --ok:#00A88F;
+      --degraded:#f9a825;
+      --outage:#d32f2f;
+      --unknown:#9ea7b3;
+      --shadow:0 4px 12px rgba(0,0,0,.08);
     }
     *{box-sizing:border-box}
-    body{margin:0;background:var(--paper);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
-    a{color:#0c6;text-decoration:underline dotted}
-    header{border-bottom:1px solid var(--border);background:#fdfefe;position:sticky;top:0;z-index:20}
-    .wrap{max-width:1100px;margin:0 auto;padding:16px 24px}
+    html,body{margin:0;padding:0;background:#f7fafb;color:var(--ink);font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif}
+    a{color:inherit}
+    .wrap{max-width:1100px;margin:0 auto;padding:16px}
+
+    header{border-bottom:1px solid var(--border);background:#fff;position:sticky;top:0;z-index:50}
     .brand{display:flex;align-items:center;gap:10px}
-    .brand img{height:22px}
-    .brand h1{margin:0;font-size:18px;letter-spacing:.5px}
-    nav.tabs{margin-top:12px;display:flex;gap:10px;flex-wrap:wrap}
-    .tab{appearance:none;border:1px solid var(--border);background:var(--chip);padding:8px 12px;border-radius:999px;cursor:pointer;font-weight:600}
-    .tab.active{outline:2px solid #e2f7ef}
+    .brand img.mascot{height:32px;width:auto}
+    .brand h1{font-size:18px;margin:0;font-weight:700;letter-spacing:.5px}
 
-    /* Panels */
-    section{padding:18px 24px}
-    .panel{border-top:1px solid var(--border)}
-    .panel h2{margin:0 0 12px;font-size:16px}
+    .hero{background:#fff;border-bottom:1px solid var(--border)}
+    .hero .kpis{display:flex;gap:12px;flex-wrap:wrap;margin-top:10px}
+    .pill{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--border);background:#fff;border-radius:999px;padding:6px 10px;font-size:12px}
+    .dot{width:10px;height:10px;border-radius:50%}
+    .dot.ok{background:var(--ok)}
+    .dot.degraded{background:var(--degraded)}
+    .dot.outage{background:var(--outage)}
+    .dot.unknown{background:var(--unknown)}
 
-    /* Mascot in header and optional large version */
-    .brand .mascot{ height:28px; width:auto; margin-left:8px }
-    .mascotLarge{ width:min(280px, 40%); display:block; margin:8px auto 0; border-radius:8px }
+    .banner{margin-top:8px;border:1px solid var(--border);background:#fff;border-radius:10px;padding:10px;box-shadow:var(--shadow);font-size:14px}
+    .controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+    .btn{border:1px solid var(--border);background:#fff;border-radius:10px;padding:8px 12px;font-size:14px;cursor:pointer}
+    .btn[aria-pressed="true"]{outline:2px solid rgba(0,168,143,.35)}
+    .btnBrand{background:var(--mint);color:#fff;border-color:transparent}
+    .btn:focus-visible{outline:3px solid rgba(0,168,143,.25);outline-offset:2px}
 
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;margin-top:14px}
+    .card{border:1px solid var(--border);background:#fff;border-radius:12px;padding:12px;box-shadow:var(--shadow);display:flex;gap:12px}
+    .name{font-weight:700}
+    .note{color:var(--muted);font-size:13px;margin-top:4px}
+    .src{font-size:12px;color:var(--muted);margin-top:6px}
 
-    /* Sticky ribbon */
-    .sticky{position:sticky; top:0; z-index:25; background:#f8fffb; border-bottom:1px solid var(--border);
-            display:flex; align-items:center; justify-content:center; gap:12px; padding:10px 16px; transition: all .25s ease}
-    .sticky.collapsed{justify-content:space-between; padding:6px 12px; font-size:12px}
-    .stickyBtn{display:inline-flex; align-items:center; gap:8px; background:var(--mint); color:#fff; padding:8px 12px; border-radius:999px; text-decoration:none; font-weight:700}
-    .sticky.collapsed .stickyBtn{padding:6px 10px}
+    .section{margin-top:18px}
+    .section h2{font-size:14px;margin:0 0 8px 0;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px}
 
-    /* Status area */
-    .sub{color:var(--muted);font-size:12px;margin-top:4px}
-    .banner{margin:14px 0 18px;padding:10px 12px;border:1px solid var(--border);border-radius:12px;background:#f8fffb}
-    .controls{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 14px}
-    .chip{cursor:pointer;border:1px solid var(--border);background:var(--chip);padding:8px 10px;border-radius:999px;font-size:12px}
-    .chip.active{outline:2px solid #e2f7ef}
-    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
-    .card{border:1px solid var(--border);border-radius:14px;padding:14px;background:var(--card);display:flex;gap:10px;align-items:flex-start;box-shadow:var(--shadow)}
-    .card:hover{background:var(--hover)}
-    .dot{width:10px;height:10px;border-radius:50%;margin-top:6px;flex:0 0 auto}
-    .dot.ok{background:var(--ok)} .dot.degraded{background:var(--degraded)}
-    .dot.outage{background:var(--outage)} .dot.unknown{background:var(--unknown)}
-    .name{font-weight:600}
-    .note{color:var(--muted);font-size:12px;margin-top:3px}
-    .src{margin-top:6px;font-size:12px}
-    details.sources{margin-top:18px;border:1px solid var(--border);border-radius:12px;padding:12px;background:#fff}
-    details.sources summary{cursor:pointer;font-weight:600}
-    /* Impacted collapsible */
-    details.impacted{margin-top:12px;border:1px solid var(--border);border-radius:12px;padding:12px;background:#fff}
-    details.impacted summary{cursor:pointer;font-weight:600}
-    .impactedNote{font-size:12px;color:var(--muted);margin:6px 0 10px}
-    .sources ul{margin:8px 0 0;padding:0;list-style:none;columns:2;gap:12px}
-    .sources li{break-inside:avoid;padding:4px 0}
-    .hidden{display:none!important}
-
-    /* Guidance + Calls-to-action */
-    .notice{margin:0 0 12px;padding:0;border:none;border-radius:0;background:transparent;box-shadow:none}
-    .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:12px 0}
-    .step{border:1px solid var(--border);border-radius:12px;padding:12px;background:#fff;box-shadow:var(--shadow)}
-    .step h3{margin:0 0 6px;font-size:14px}
-    /* spacing for buttons placed under explanatory text */
-    .step .btnBrand{display:inline-block; margin-top:8px;}
-
-    .ctaGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-top:12px}
-    .btnBrand{appearance:none;border:none;border-radius:12px;padding:12px 16px;color:#fff;background:var(--mint);font-weight:700;cursor:pointer;transition:transform .08s ease, box-shadow .2s ease, filter .15s ease;box-shadow:0 6px 18px rgba(0,168,143,.22)}
-    .btnBrand:hover{transform:translateY(-1px);filter:brightness(.98);box-shadow:0 10px 22px rgba(0,168,143,.28)}
-    .btnBrand:focus-visible{outline:3px solid rgba(0,168,143,.3);outline-offset:2px}
-
-    /* About page */
-    .lead{color:var(--muted); margin:0 0 10px}
-    .bullets{margin:0; padding-left:18px; color:var(--ink); font-size:14px}
-    .callout{border:1px solid var(--border); background:#fff; border-radius:12px; padding:12px; box-shadow:var(--shadow); margin:12px 0}
-    .people{display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:12px}
-    .person{border:1px solid var(--border); background:#fff; border-radius:12px; padding:12px; box-shadow:var(--shadow)}
-    .person .pname{font-weight:700}
-    .person .pmeta{font-size:12px; color:var(--muted); margin-top:4px}
-
-    footer{border-top:1px solid var(--border);margin-top:18px}
-    footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;font-size:12px;color:var(--muted)}
-
-    /* ---------- HERO ---------- */
-.hero{
-  display:grid;
-  grid-template-columns: 1.2fr .8fr;
-  gap:20px;
-  align-items:center;
-  margin:14px 0 18px;
-  padding:18px;
-  border:1px solid var(--border);
-  border-radius:16px;
-  background:linear-gradient(140deg, #f8fffb 0%, #ffffff 60%);
-  box-shadow: var(--shadow);
-}
-@media (max-width: 820px){ .hero{ grid-template-columns: 1fr; } }
-
-.heroTitle{ margin:0 0 6px; font-size:22px; letter-spacing:.2px }
-.heroLead{ margin:0 0 10px; color:var(--muted) }
-.ctaRow{ display:flex; gap:10px; flex-wrap:wrap }
-.heroArt{ display:flex; justify-content:center; align-items:center }
-.mascot{ width:100%; max-width:360px; height:auto; }
-
-/* motion */
-@keyframes roll { to { transform: rotate(360deg); } }
-@keyframes puff {
-  0%   { opacity:0; transform: translateY(0) scale(.6); }
-  35%  { opacity:1; }
-  100% { opacity:0; transform: translateY(-26px) scale(1.1); }
-}
-.wheel{ transform-origin: center; animation: roll 2.2s linear infinite; }
-.steam circle{
-  fill:#d8f3ee;
-  animation: puff 2.4s ease-in-out infinite;
-}
-.steam circle:nth-child(2){ animation-delay:.18s }
-.steam circle:nth-child(3){ animation-delay:.36s }
-
-/* respect reduced motion */
-@media (prefers-reduced-motion: reduce){
-  .wheel, .steam circle{ animation: none !important; }
-}
-
-/* ---------- BUTTON VARIANTS ---------- */
-.btnOutline{
-  appearance:none; border:2px solid var(--mint); background:transparent; color:var(--mint);
-  font-weight:700; border-radius:12px; padding:10px 14px; text-decoration:none;
-  display:inline-flex; align-items:center; gap:8px; cursor:pointer;
-}
-.btnOutline:hover{ background:#f2fcfa; }
-.btnOutline:focus-visible{ outline:3px solid rgba(0,168,143,.3); outline-offset:2px; }
-
-.btnGhost{
-  appearance:none; border:1px dashed var(--border); background:var(--chip); color:var(--ink);
-  font-weight:600; border-radius:12px; padding:10px 14px; cursor:pointer;
-}
-.btnGhost:hover{ background:#eef5f3; }
-
-.btnPill{
-  appearance:none; border:none; background:var(--mint); color:#fff; font-weight:700;
-  padding:8px 12px; border-radius:999px; cursor:pointer; box-shadow:0 6px 18px rgba(0,168,143,.22);
-}
-.btnPill:hover{ transform: translateY(-1px); filter:brightness(.98); box-shadow:0 10px 22px rgba(0,168,143,.28); }
-.btnPill:focus-visible{ outline:3px solid rgba(0,168,143,.3); outline-offset:2px; }
-
-
+    .stickyBar{position:fixed;right:16px;bottom:16px;background:#101316;color:#fff;border-radius:999px;padding:10px 14px;display:flex;align-items:center;gap:8px;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+    .stickyBar .text{font-size:13px}
+    .hide{display:none}
   </style>
 </head>
 <body>
   <header>
     <div class="wrap">
-
-<div class="brand">
-  <img src="/logo.svg" alt="Trainline logo" />
-  <img src="/mascot-techsup.png" class="mascot" alt="TECHSUP mascot" loading="lazy" decoding="async" />
-  <h1>TECHSUP</h1>
-</div>
-
-      <div class="sub" id="updated">Last updated: —</div>
-      <nav class="tabs" id="tabs">
-        <button class="tab active" data-target="#help">Get Help</button>
-        <button class="tab" data-target="#status">Services Status</button>
-        <button class="tab" data-target="#about">About TECHSUP</button>
-      </nav>
+      <div class="brand">
+        <img src="/logo.svg" alt="Logo" height="20" />
+        <img src="/mascot-techsup.png" class="mascot" alt="TECHSUP mascot" loading="lazy" decoding="async" />
+        <h1>TECHSUP</h1>
+      </div>
     </div>
   </header>
 
-  <!-- STICKY RIBBON (collapses into CTA) -->
-  <div id="sticky" class="sticky" role="status" aria-live="polite">
-    <span id="stickyText">Checking vendor status…</span>
-    <a id="stickyBtn" href="#help" class="stickyBtn">Get help</a>
-  </div>
-
-  <!-- STATUS PANEL -->
-  <section class="panel hidden" id="status">
+  <section class="hero">
     <div class="wrap">
-      <div class="banner" id="banner" aria-live="polite"></div>
-      <div class="controls" id="filters">
-        <button class="chip active" data-filter="all">All</button>
-        <button class="chip" data-filter="outage">Outage</button>
-        <button class="chip" data-filter="degraded">Degraded</button>
-        <button class="chip" data-filter="ok">Operational</button>
-        <button class="chip" data-filter="unknown">Unknown</button>
-        <a class="chip" href="/api/status" target="_blank" rel="noreferrer noopener">Raw JSON</a>
+      <div id="banner" class="banner"></div>
+
+      <div class="kpis" id="kpis">
+        <div class="pill"><span class="dot ok"></span><span id="k_ok">0</span> OK</div>
+        <div class="pill"><span class="dot degraded"></span><span id="k_degraded">0</span> Dégradés</div>
+        <div class="pill"><span class="dot outage"></span><span id="k_outage">0</span> En panne</div>
       </div>
-      <section class="grid" id="cards"></section>
 
-      <details class="sources" id="sourcesBox">
-        <summary>Sources used for this status</summary>
-        <ul id="sourcesList"></ul>
-      </details>
-    </div>
-  </section>
+      <div class="controls" role="toolbar" aria-label="Filtrer par statut">
+        <button class="btn" data-filter="all" aria-pressed="true">Tout</button>
+        <button class="btn" data-filter="ok">OK</button>
+        <button class="btn" data-filter="degraded">Dégradé</button>
+        <button class="btn" data-filter="outage">Panne</button>
+        <button id="btnRaw" class="btn btnBrand" style="margin-left:auto">Raw JSON</button>
+      </div>
 
-  <!-- HELP PANEL -->
-  <section class="panel" id="help">
-    <div class="wrap">
-      <!-- HERO -->
-<section class="hero reveal" aria-label="Tech Support hero">
-  <div class="heroText">
-    <h2 class="heroTitle">Tech help, on track.</h2>
-    <p class="heroLead">Check status, ask the chatbot, or raise a ticket. Faster than waiting for “have you tried turning it off and on again.”</p>
-    <div class="ctaRow">
-      <button class="btnBrand" id="openGptBtnHero" type="button" aria-label="Open Chatbot Assistant">
-        Ask our Chatbot Assistant
-      </button>
-      <a class="btnOutline" id="ctaStatus" href="#status" aria-label="View Services Status">View status</a>
-    </div>
-  </div>
+      <div class="section">
+        <h2>Tous les services</h2>
+        <div id="list_all" class="grid"></div>
+      </div>
 
-  <div class="heroArt" aria-hidden="true">
-    <!-- Inline SVG mascot: accessible, brand-aware, tiny animations -->
-    <svg class="mascot" viewBox="0 0 300 180" role="img" aria-labelledby="mascotTitle">
-      <title id="mascotTitle">Friendly helper train</title>
-      <defs>
-        <linearGradient id="mintGlow" x1="0" x2="1">
-          <stop offset="0" stop-color="var(--mint)" stop-opacity="1"/>
-          <stop offset="1" stop-color="var(--mint)" stop-opacity=".6"/>
-        </linearGradient>
-        <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
-          <feDropShadow dx="0" dy="6" stdDeviation="8" flood-opacity=".18"/>
-        </filter>
-      </defs>
-
-      <!-- track -->
-      <rect x="0" y="150" width="300" height="6" fill="#dde5eb"/>
-      <g opacity=".5">
-        <rect x="10" y="156" width="28" height="3" rx="1.5" fill="#cbd5df"/>
-        <rect x="50" y="156" width="28" height="3" rx="1.5" fill="#cbd5df"/>
-        <rect x="90" y="156" width="28" height="3" rx="1.5" fill="#cbd5df"/>
-        <rect x="130" y="156" width="28" height="3" rx="1.5" fill="#cbd5df"/>
-        <rect x="170" y="156" width="28" height="3" rx="1.5" fill="#cbd5df"/>
-        <rect x="210" y="156" width="28" height="3" rx="1.5" fill="#cbd5df"/>
-        <rect x="250" y="156" width="28" height="3" rx="1.5" fill="#cbd5df"/>
-      </g>
-
-      <!-- steam -->
-      <g class="steam">
-        <circle cx="188" cy="38" r="8" />
-        <circle cx="205" cy="24" r="6" />
-        <circle cx="222" cy="14" r="5" />
-      </g>
-
-      <!-- loco -->
-      <g filter="url(#softShadow)">
-        <!-- cabin -->
-        <rect x="70" y="70" width="80" height="44" rx="10" fill="#ffffff" stroke="var(--mint)" stroke-width="3"/>
-        <rect x="80" y="78" width="40" height="16" rx="6" fill="#e8f7f4"/>
-        <!-- face window -->
-        <rect x="124" y="78" width="20" height="16" rx="6" fill="#e8f7f4"/>
-
-        <!-- boiler -->
-        <rect x="150" y="82" width="86" height="34" rx="12" fill="url(#mintGlow)" stroke="var(--mint)" stroke-width="2"/>
-
-        <!-- nose -->
-        <rect x="236" y="90" width="20" height="18" rx="9" fill="var(--mint)"/>
-
-        <!-- smiley face -->
-        <circle cx="107" cy="104" r="10" fill="#fff" stroke="#0b0d10" stroke-width="2"/>
-        <circle cx="136" cy="104" r="10" fill="#fff" stroke="#0b0d10" stroke-width="2"/>
-        <circle cx="107" cy="104" r="3" fill="#0b0d10"/>
-        <circle cx="136" cy="104" r="3" fill="#0b0d10"/>
-        <path d="M110 115 Q121 122 133 115" fill="none" stroke="#0b0d10" stroke-width="2" stroke-linecap="round"/>
-
-        <!-- chimney -->
-        <rect x="182" y="58" width="16" height="24" rx="3" fill="#0b0d10"/>
-      </g>
-
-      <!-- wheels -->
-      <g class="wheelGroup">
-        <g class="wheel" transform="translate(102,140)">
-          <circle r="16" fill="#fff" stroke="#0b0d10" stroke-width="3"/>
-          <circle r="4" fill="var(--mint)"/>
-          <rect x="-2" y="-15" width="4" height="10" rx="2" fill="var(--mint)"/>
-        </g>
-        <g class="wheel" transform="translate(152,140)">
-          <circle r="16" fill="#fff" stroke="#0b0d10" stroke-width="3"/>
-          <circle r="4" fill="var(--mint)"/>
-          <rect x="-2" y="-15" width="4" height="10" rx="2" fill="var(--mint)"/>
-        </g>
-        <g class="wheel" transform="translate(202,140)">
-          <circle r="16" fill="#fff" stroke="#0b0d10" stroke-width="3"/>
-          <circle r="4" fill="var(--mint)"/>
-          <rect x="-2" y="-15" width="4" height="10" rx="2" fill="var(--mint)"/>
-        </g>
-      </g>
-    </svg>
-  </div>
-</section>
-      <div class="notice reveal" id="statusAdvisory" aria-live="polite"></div>
-
-      <!-- Impacted vendor cards appear here when issues exist -->
-      <details id="impactedWrap" class="reveal hidden impacted" aria-label="Currently impacted services">
-        <summary>Currently impacted</summary>
-        <div class="impactedNote" id="impactedNote"></div>
-        <section class="grid" id="impactedCards"></section>
-      </details>
-
-      <div class="steps">
-        <div class="step reveal">
-          <h3>1) Check status first</h3>
-          <p>If any tool shows Outage or Degraded, it’s likely the cause. No ticket needed. Follow the vendor link for updates.</p>
-        </div>
-        <div class="step reveal">
-          <h3>2) Ask our Chatbot Assistant</h3>
-          <p>Click the button to open the TECHSUP helper in a new tab. If it doesn’t solve it, come back and raise a ticket.</p>
-          <p><button class="btnBrand" id="openGptBtn" type="button">Ask our Chatbot Assistant</button></p>
-        </div>
-        <div class="step reveal">
-          <h3>3) Raise a ticket</h3>
-          <p>Pick the right request type so it lands with the right team.</p>
-          <div class="ctaGrid" id="ticketGrid"></div>
-        </div>
-        <div class="step reveal">
-          <h3>4) Slack fallback</h3>
-          <p>Emergencies only: <a href="https://slack.com/app_redirect?channel=help-tech-support" target="_blank" rel="noreferrer noopener">#help-tech-support</a>.</p>
-        </div>
+      <div class="section">
+        <h2>Impactés</h2>
+        <div id="list_bad" class="grid"></div>
       </div>
     </div>
   </section>
 
-  <!-- ABOUT PANEL -->
-  <section class="panel hidden" id="about">
-    <div class="wrap">
-      <h2>Tech Support @ Trainline</h2>
-      <p class="lead">Welcome to TECHSUP — your go-to for IT troubleshooting and support.</p>
-
-      <div class="callout">
-        <ul class="bullets">
-          <li>Get practical IT tips and best practices.</li>
-          <li>Ask any IT question and get help from the team or colleagues.</li>
-        </ul>
-      </div>
-
-      <h3 style="margin:14px 0 8px;font-size:14px">Quick reminders</h3>
-      <div class="callout">
-        <ol class="bullets" style="padding-left:18px">
-          <li>Before raising an issue, check our <a href="https://trainline.atlassian.net/wiki/" target="_blank" rel="noreferrer noopener">How-To Guides</a>.</li>
-          <li>If it persists, raise a support ticket via:
-            <ul class="bullets" style="margin-top:6px">
-              <li>Email: <a href="mailto:123servicedesk@thetrainline.com">123servicedesk@thetrainline.com</a></li>
-              <li>Portal: <a href="https://trainline.atlassian.net/servicedesk/customer/portal/26" target="_blank" rel="noreferrer noopener">Trainline Service Desk</a></li>
-            </ul>
-          </li>
-          <li>Use 👀 for “message in progress” and ✅ when solved.</li>
-        </ol>
-      </div>
-
-      <h3 style="margin:14px 0 8px;font-size:14px">Meet the team</h3>
-      <div class="people">
-        <a class="person" href="https://trainline.enterprise.slack.com/team/U090KGVB0CX" target="_blank" rel="noreferrer noopener">
-          <div class="pname">Manager</div>
-          <div class="pmeta">Open Slack profile</div>
-        </a>
-
-        <a class="person" href="https://trainline.slack.com/team/UCZ0CNU80" target="_blank" rel="noreferrer noopener">
-          <div class="pname">London office</div>
-          <div class="pmeta">Open Slack profile</div>
-        </a>
-        <a class="person" href="https://trainline.slack.com/team/U05FHPC2F16" target="_blank" rel="noreferrer noopener">
-          <div class="pname">London office</div>
-          <div class="pmeta">Open Slack profile</div>
-        </a>
-
-        <a class="person" href="https://trainline.slack.com/team/ULDV0D276" target="_blank" rel="noreferrer noopener">
-          <div class="pname">Paris office</div>
-          <div class="pmeta">Open Slack profile</div>
-        </a>
-
-        <a class="person" href="https://trainline.slack.com/team/U7YR52KJQ" target="_blank" rel="noreferrer noopener">
-          <div class="pname">Edinburgh office</div>
-          <div class="pmeta">Open Slack profile</div>
-        </a>
-
-        <a class="person" href="https://trainline.slack.com/team/U040A4EENJX" target="_blank" rel="noreferrer noopener">
-          <div class="pname">Barcelona office</div>
-          <div class="pmeta">Open Slack profile</div>
-        </a>
-      </div>
-    </div>
-  </section>
-
-  <footer>
-    <div class="wrap">
-      <div>Support: <a href="mailto:123servicedesk@thetrainline.com">123servicedesk@thetrainline.com</a> • Portal: <a href="https://trainline.atlassian.net/servicedesk/customer/portal/26" target="_blank" rel="noreferrer noopener">Service Desk</a> • Slack: <a href="https://slack.com/app_redirect?channel=help-tech-support" target="_blank" rel="noreferrer noopener">#help-tech-support</a></div>
-      <div>Team inbox: <a href="mailto:jediteam@thetrainline.com">jediteam@thetrainline.com</a></div>
-    </div>
-  </footer>
+  <div id="sticky" class="stickyBar hide" aria-live="polite">
+    <span class="dot" id="stickyDot"></span>
+    <span class="text" id="stickyText">Statut</span>
+  </div>
 
   <script>
-    const BRAND = '#00A88F';
-    const GPT_URL = 'https://chatgpt.com/g/g-6891d22835448191affa77266cae32d0-tech-support-helper';
-    const TICKET_LINKS = [
-      { label: 'Incident',          url: 'https://trainline.atlassian.net/servicedesk/customer/portal/26/group/108/create/364' },
-      { label: 'Hardware Request',  url: 'https://trainline.atlassian.net/servicedesk/customer/portal/26/group/108/create/365' },
-      { label: 'Software Request',  url: 'https://trainline.atlassian.net/servicedesk/customer/portal/26/group/108/create/368' },
-      { label: 'Access Request',    url: 'https://trainline.atlassian.net/servicedesk/customer/portal/26/group/108/create/371' },
-      { label: 'Event Request',     url: 'https://trainline.atlassian.net/servicedesk/customer/portal/26/group/108/create/366' }
-    ];
+    // ---------- Helpers ----------
+    const qs = (s,el=document)=>el.querySelector(s);
+    const qsa = (s,el=document)=>Array.from(el.querySelectorAll(s));
+    const el = (tag, cls='') => { const e = document.createElement(tag); if (cls) e.className = cls; return e; };
 
-    // ---------- Tabs ----------
-    document.getElementById('tabs').addEventListener('click', (e)=>{
-      const btn = e.target.closest('.tab'); if(!btn) return;
-      document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-      btn.classList.add('active');
-      const target = btn.dataset.target;
-      document.querySelectorAll('.panel').forEach(p=>p.classList.add('hidden'));
-      document.querySelector(target).classList.remove('hidden');
-      const h = document.querySelector(target+' h2'); if(h) h.focus?.();
-    });
+    const statusClass = s => ({ operational:'ok', ok:'ok', degraded:'degraded', partial:'degraded', outage:'outage', down:'outage' }[String(s||'').toLowerCase()] || 'unknown');
 
-    // Sticky collapse
-    window.addEventListener('scroll', ()=>{
-      const y = window.scrollY || document.documentElement.scrollTop;
-      document.getElementById('sticky').classList.toggle('collapsed', y > 100);
-    });
+    let lastSourceUrl = '/services.json';
 
-    // ---------- Status loader (with fallback) ----------
-    async function loadStatus(){
+    // Try /api/status then fallback to /services.json
+    async function loadStatus() {
+      const ts = Date.now();
       try {
-        const r = await fetch('/api/status?ts='+Date.now(), { cache: 'no-store' });
-        if (r.ok) return await r.json();
-        throw new Error('bad status');
+        const r = await fetch(`/api/status?ts=${ts}`, { cache: 'no-store' });
+        if (!r.ok) throw new Error('api not ok');
+        const j = await r.json();
+        lastSourceUrl = '/api/status';
+        return j;
       } catch {
-        const r2 = await fetch('services.json?ts='+Date.now(), { cache: 'no-store' });
-        if (r2.ok) return await r2.json();
-        throw new Error('both /api/status and services.json failed');
+        const r2 = await fetch(`/services.json?ts=${ts}`, { cache: 'no-store' });
+        if (!r2.ok) throw new Error('json not ok');
+        const j2 = await r2.json();
+        lastSourceUrl = '/services.json';
+        return j2;
       }
     }
-    function statusClass(s){ return ['ok','degraded','outage','unknown'].includes(s)?s:'unknown' }
 
-    function renderStatus(data){
-      const elCards = document.getElementById('cards');
-      const elUpdated = document.getElementById('updated');
-      const elBanner = document.getElementById('banner');
-      const elSourcesBox = document.getElementById('sourcesBox');
-      const elSourcesList = document.getElementById('sourcesList');
+    function setRawButton() {
+      const btn = qs('#btnRaw');
+      btn.onclick = () => {
+        const w = 900, h = 700;
+        const left = Math.round((window.screen.width - w) / 2);
+        const top = Math.round((window.screen.height - h) / 2);
+        window.open(lastSourceUrl, '_blank', `popup=yes,width=${w},height=${h},left=${left},top=${top}`);
+      };
+    }
 
-      elUpdated.textContent = 'Last updated: ' + new Date(data.lastUpdatedISO || Date.now()).toLocaleString();
-      elBanner.textContent = data.banner || '';
+    function renderStatus(data) {
+      // Banner
+      const banner = qs('#banner');
+      const bannerText = data.banner || 'Statut des fournisseurs';
+      const updated = data.lastUpdatedISO ? new Date(data.lastUpdatedISO).toLocaleString() : '';
+      banner.innerHTML = `<strong>${bannerText}</strong>${updated ? ` <span style="color:var(--muted)">• Mise à jour: ${updated}</span>` : ''}`;
 
-      elCards.innerHTML = '';
-      const links = new Map();
-      const bad = [];
-      (data.services || []).forEach(svc=>{
+      // Lists
+      const all = Array.isArray(data.services) ? data.services : [];
+      const bad = all.filter(s => ['degraded','outage'].includes(statusClass(s.status)));
+
+      // KPIs
+      qs('#k_ok').textContent = all.filter(s => statusClass(s.status) === 'ok').length;
+      qs('#k_degraded').textContent = all.filter(s => statusClass(s.status) === 'degraded').length;
+      qs('#k_outage').textContent = all.filter(s => statusClass(s.status) === 'outage').length;
+
+      const $all = qs('#list_all'); $all.innerHTML = '';
+      const $bad = qs('#list_bad'); $bad.innerHTML = '';
+
+      const makeCard = (svc) => {
         const cls = statusClass(svc.status);
-        if(cls==='degraded' || cls==='outage') bad.push(svc);
-        const card = document.createElement('article');
-        card.className = card item ${cls};
+        const card = el('div', `card item ${cls}`);
         card.dataset.status = cls;
-        const linkHtml = svc.link ? <div class="src">Source: <a href="${svc.link}" target="_blank" rel="noreferrer noopener">${new URL(svc.link).host}</a></div> : '';
-        if(svc.link) links.set(svc.name, svc.link);
-        card.innerHTML = 
-          <div class="dot ${cls}" title="${cls}"></div>
-          <div>
-            <div class="name">${svc.link ? <a href="${svc.link}" target="_blank" rel="noreferrer noopener">${svc.name}</a> : svc.name}</div>
-            <div class="note">${svc.note ? svc.note : ''}</div>
-            ${linkHtml}
-          </div>
-        ;
-        elCards.appendChild(card);
-      });
 
-      document.querySelectorAll('#filters .chip').forEach(btn=>{
-        btn.onclick=()=>{
-          document.querySelectorAll('#filters .chip').forEach(x=>x.classList.remove('active'));
-          btn.classList.add('active');
-          const f=btn.dataset.filter;
-          document.querySelectorAll('.item').forEach(it=>{
-            it.classList.toggle('hidden', f!=='all' && it.dataset.status!==f);
+        const dot = el('div', `dot ${cls}`); dot.setAttribute('title', cls);
+        const body = el('div');
+
+        const name = el('div', 'name');
+        if (svc.link) {
+          const a = el('a'); a.href = svc.link; a.target = '_blank'; a.rel = 'noreferrer noopener'; a.textContent = svc.name;
+          name.appendChild(a);
+        } else {
+          name.textContent = svc.name;
+        }
+
+        const note = el('div', 'note'); note.textContent = svc.note || '';
+
+        const src = el('div', 'src');
+        if (svc.link) {
+          try {
+            const host = new URL(svc.link).host;
+            src.innerHTML = `Source : <a href="${svc.link}" target="_blank" rel="noreferrer noopener">${host}</a>`;
+          } catch { /* ignore bad URL */ }
+        }
+
+        body.appendChild(name);
+        if (svc.note) body.appendChild(note);
+        if (svc.link) body.appendChild(src);
+
+        card.appendChild(dot);
+        card.appendChild(body);
+        return card;
+      };
+
+      all.forEach(svc => $all.appendChild(makeCard(svc)));
+      bad.forEach(svc => $bad.appendChild(makeCard(svc)));
+
+      // Sticky bar
+      const sticky = qs('#sticky');
+      const stickyDot = qs('#stickyDot');
+      const stickyText = qs('#stickyText');
+      const n = bad.length;
+      sticky.classList.toggle('hide', n === 0);
+      stickyDot.className = `dot ${n ? (bad.some(s=>statusClass(s.status)==='outage') ? 'outage' : 'degraded') : 'ok'}`;
+      stickyText.textContent = n ? `${n} fournisseur${n>1?'s':''} impacté${n>1?'s':''}` : 'Tous les systèmes OK';
+
+      // Filters
+      qsa('.controls .btn[data-filter]').forEach(b => {
+        b.addEventListener('click', () => {
+          qsa('.controls .btn[data-filter]').forEach(x => x.setAttribute('aria-pressed', 'false'));
+          b.setAttribute('aria-pressed', 'true');
+          const f = b.dataset.filter;
+          qsa('.card.item').forEach(c => {
+            c.hidden = f !== 'all' && c.dataset.status !== f;
           });
-        };
-      });
-
-      elSourcesList.innerHTML = '';
-      links.forEach((url, name)=>{
-        const li=document.createElement('li');
-        li.innerHTML = <a href="${url}" target="_blank" rel="noreferrer noopener">${name}</a>;
-        elSourcesList.appendChild(li);
-      });
-      elSourcesBox.classList.toggle('hidden', links.size===0);
-
-      // Advisory + impacted cards in Help panel
-      const adv = document.getElementById('statusAdvisory');
-      const impactedWrap = document.getElementById('impactedWrap');
-      const impactedCards = document.getElementById('impactedCards');
-      if (bad.length) {
-        const list = bad.map(s=>s.name).join(', ');
-        adv.innerHTML = <strong>${bad.length} vendor issue${bad.length>1?'s':''} detected:</strong> ${list}.;
-        impactedWrap.classList.remove('hidden');
-        impactedWrap.open = true;
-        const impactedNote = document.getElementById('impactedNote');
-        if (impactedNote) impactedNote.textContent = 'If your problem relates to these, no ticket is needed. Follow the vendor pages for ETA.';
-        impactedCards.innerHTML = '';
-        bad.forEach(svc=>{
-          const cls = statusClass(svc.status);
-          const el = document.createElement('article');
-          el.className = card ${cls};
-          el.innerHTML = 
-            <div class="dot ${cls}" title="${cls}"></div>
-            <div>
-              <div class="name">${svc.link ? <a href="${svc.link}" target="_blank" rel="noreferrer noopener">${svc.name}</a> : svc.name}</div>
-              <div class="note">${svc.note || ''}</div>
-              ${svc.link ? <div class="src">Source: <a href="${svc.link}" target="_blank" rel="noreferrer noopener">${new URL(svc.link).host}</a></div> : ''}
-            </div>;
-          impactedCards.appendChild(el);
         });
-      } else {
-        adv.textContent = All monitored vendors are green. If you're still blocked, ask our Chatbot Assistant, then create a ticket if needed.;
-        impactedWrap.classList.add('hidden');
-        impactedWrap.open = false;
-        impactedCards.innerHTML = '';
-        const impactedNote = document.getElementById('impactedNote');
-        if (impactedNote) impactedNote.textContent = '';
-      }
-
-      // Sticky ribbon contents
-      const stickyText = document.getElementById('stickyText');
-      const stickyBtn = document.getElementById('stickyBtn');
-      if (bad.length) {
-        stickyText.textContent = ${bad.length} vendor issue${bad.length>1?'s':''} detected;
-        stickyBtn.textContent = 'View impacted';
-        stickyBtn.href = '#status';
-      } else {
-        stickyText.textContent = 'All systems normal';
-        stickyBtn.textContent = 'Get help';
-        stickyBtn.href = '#help';
-      }
+      });
     }
 
-    // ---------- CTA buttons ----------
-    function openPopup(url){
-      const w = Math.min(1100, window.screen.width - 80);
-      const h = Math.min(800, window.screen.height - 120);
-      const left = window.screenX + (window.outerWidth - w) / 2;
-      const top = window.screenY + (window.outerHeight - h) / 2;
-      const win = window.open(url, '_blank', popup=yes,width=${w},height=${h},left=${left},top=${top});
-      if(!win) window.open(url, '_blank', 'noopener,noreferrer');
-    }
-
-    // Open GPT from CTA
-    const openGpt = ()=> openPopup(GPT_URL);
-    document.getElementById('openGptBtn').addEventListener('click', openGpt);
-
-    // Make sticky button switch to Services Status when appropriate
-    document.getElementById('stickyBtn').addEventListener('click', (e)=>{
-      const href = e.currentTarget.getAttribute('href');
-      if(href === '#status'){
-        e.preventDefault();
-        const statusTab = Array.from(document.querySelectorAll('#tabs .tab')).find(b=>b.dataset.target === '#status');
-        if(statusTab){ statusTab.click(); }
-        document.getElementById('status').scrollIntoView({ behavior:'smooth', block:'start' });
-      }
-    });
-
-    // Ticket buttons
-    const ticketGrid = document.getElementById('ticketGrid');
-    TICKET_LINKS.forEach((t,i)=>{
-      const b = document.createElement('button');
-      b.className = 'btnBrand reveal';
-      b.textContent = t.label;
-      b.onclick = ()=> openPopup(t.url);
-      b.style.transitionDelay = ${Math.min(i*0.06, .4)}s;
-      ticketGrid.appendChild(b);
-    });
-
-    // Reveal on scroll
-    const io = new IntersectionObserver((entries)=>{ entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('in'); }); }, {threshold: .15});
-    const watchReveal = ()=> document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
-
-    // ---------- Init ----------
     (async () => {
-      const statusData = await loadStatus();
-      renderStatus(statusData);
-      watchReveal();
+      try {
+        const data = await loadStatus();
+        renderStatus(data);
+        setRawButton();
+      } catch (e) {
+        qs('#banner').textContent = 'Impossible de charger le statut.';
+        console.error(e);
+      }
     })();
   </script>
 </body>

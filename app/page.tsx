@@ -106,10 +106,11 @@ export default function Page() {
     : "—";
 
   // Sticky contents derived from status
-  const stickyText = bad.length
-    ? `${bad.length} vendor issue${bad.length > 1 ? "s" : ""} detected`
-    : "All systems normal";
-  const stickyCTA = bad.length ? { text: "View impacted", href: "#help" } : { text: "Open TECHSUP Chat", href: "#help" };
+const hasIncidents = bad.length > 0;
+
+const stickyText = hasIncidents
+  ? `${bad.length} vendor issue${bad.length > 1 ? "s" : ""} detected`
+  : "All systems normal";
 
   return (
     <>
@@ -117,8 +118,7 @@ export default function Page() {
       <header>
         <div className="wrap">
           <div className="brand">
-            {/* Trainline logo must be /public/logo.svg */}
-            <img src="/logo.svg" alt="Trainline logo" />
+            <img src="/logo.png" alt="Trainline logo" />
             <h1>TECHSUP</h1>
           </div>
           <div className="sub" id="updated">Last updated: {lastUpdated}</div>
@@ -141,10 +141,38 @@ export default function Page() {
       </header>
 
       {/* Sticky ribbon */}
-      <div id="sticky" className="sticky" role="status" aria-live="polite">
-        <span id="stickyText">{stickyText}</span>
-        <a id="stickyBtn" href={stickyCTA.href} className="stickyBtn">{stickyCTA.text}</a>
-      </div>
+<div id="sticky" className="sticky" role="status" aria-live="polite">
+  <span id="stickyText">{stickyText}</span>
+
+  {hasIncidents ? (
+    // Go to Services Status panel and scroll into view
+    <a
+      id="stickyBtn"
+      href="#status"
+      className="stickyBtn"
+      onClick={(e) => {
+        e.preventDefault();
+        setActiveTab("#status");
+        document.getElementById("status")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }}
+    >
+      View impacted
+    </a>
+  ) : (
+    // Open chatbot in a centered popup (same as step 2)
+    <a
+      id="stickyBtn"
+      href={GPT_URL}
+      target="_blank"
+      rel="noreferrer noopener"
+      className="stickyBtn"
+      onClick={(e) => { e.preventDefault(); openPopup(GPT_URL); }}
+    >
+      Open TECHSUP Chat
+    </a>
+  )}
+</div>
+
 
       {/* STATUS PANEL */}
       <section className={`panel ${activeTab === "#status" ? "" : "hidden"}`} id="status">
@@ -237,9 +265,11 @@ export default function Page() {
                           : svc.name}
                       </div>
                       <div className="note">{svc.note || ""}</div>
-                      {svc.link
-                        ? <div className="src">Source: <a href={svc.link} target="_blank" rel="noreferrer noopener">{host}</a></div>
-                        : null}
+{svc.link ? (
+  <div className="src">Source: <a href={svc.link} target="_blank" rel="noreferrer noopener">
+    {new URL(svc.link).host}
+  </a></div>
+) : null}
                     </div>
                   </article>
                 );
@@ -255,8 +285,12 @@ export default function Page() {
             <div className="step reveal">
               <h3>2) Ask TECHSUP Chat</h3>
               <p>Click the button to open the TECHSUP helper in a new tab. If it doesn’t solve it, come back and raise a ticket.</p>
-              <p style={{marginTop:8}}><a className="btnBrand" id="openGpt" href="#" onClick={(e)=>{e.preventDefault(); openPopup(GPT_URL);}}>Open TECHSUP Chat</a></p>
-            </div>
+<p className="ctaRow">
+  <a className="btnBrand" id="openGpt" href="#" onClick={(e)=>{e.preventDefault(); openPopup(GPT_URL);}}>
+    Open TECHSUP Chat
+  </a>
+</p>            
+</div>
             <div className="step reveal">
               <h3>3) Raise a ticket</h3>
               <p>Pick the right request type so it lands with the right team.</p>

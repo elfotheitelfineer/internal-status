@@ -72,6 +72,8 @@ details.sources summary{cursor:pointer;font-weight:600}
 .step{border:1px solid var(--border);border-radius:12px;padding:12px;background:#fff;box-shadow:var(--shadow)}
 .step h3{margin:0 0 6px;font-size:14px}
 .step p{margin:0;color:var(--muted);font-size:12px}
+/* Give the Step 2 CTA some breathing room */
+.ctaRow { margin-top: 18px; }
 .ctaGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-top:12px}
 .btnBrand{appearance:none;border:none;border-radius:12px;padding:12px 16px;color:#fff;background:var(--mint);font-weight:700;cursor:pointer;transition:transform .08s ease, box-shadow .2s ease, filter .15s ease;box-shadow:0 6px 18px rgba(0,168,143,.22)}
 .btnBrand:hover{transform:translateY(-1px);filter:brightness(.98);box-shadow:0 10px 22px rgba(0,168,143,.28)}

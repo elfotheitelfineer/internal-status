@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 4, "column": 0}, "map": {"version":3,"sources":["file:///Users/julien.chevallier/Library/CloudStorage/OneDrive-TrainlineLtd/elfotheitelfineer/help-tech-support/app/layout.tsx"],"sourcesContent":["import \"./globals.css\";\n\nexport const metadata = {\n  title: \"TECHSUP • Vendor Status\",\n  description: \"Status board with vendor incidents and quick filters\"\n};\n\nexport default function RootLayout({ children }: { children: React.ReactNode }) {\n  return (\n    <html lang=\"fr\">\n      <head>\n        <link rel=\"icon\" href=\"/logo.svg\" />\n      </head>\n      <body>{children}</body>\n    </html>\n  );\n}\n"],"names":[],"mappings":";;;;;;;;;AAEO,MAAM,WAAW;IACtB,OAAO;IACP,aAAa;AACf;AAEe,SAAS,WAAW,EAAE,QAAQ,EAAiC;IAC5E,qBACE,8OAAC;QAAK,MAAK;;0BACT,8OAAC;0BACC,cAAA,8OAAC;oBAAK,KAAI;oBAAO,MAAK;;;;;;;;;;;0BAExB,8OAAC;0BAAM;;;;;;;;;;;;AAGb","debugId":null}},
+    {"offset": {"line": 53, "column": 0}, "map": {"version":3,"sources":["file:///Users/julien.chevallier/Library/CloudStorage/OneDrive-TrainlineLtd/elfotheitelfineer/help-tech-support/node_modules/next/src/server/route-modules/app-page/vendored/rsc/react-jsx-dev-runtime.ts"],"sourcesContent":["module.exports = (\n  require('../../module.compiled') as typeof import('../../module.compiled')\n).vendored['react-rsc']!.ReactJsxDevRuntime\n"],"names":["module","exports","require","vendored","ReactJsxDevRuntime"],"mappings":"AAAAA,OAAOC,OAAO,GACZC,QAAQ,4HACRC,QAAQ,CAAC,YAAY,CAAEC,kBAAkB","ignoreList":[0],"debugId":null}}]
+}

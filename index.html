@@ -38,16 +38,17 @@
     .panel{border-top:1px solid var(--border)}
     .panel h2{margin:0 0 12px;font-size:16px}
 
-    /* Sticky ribbon + Floating chat */
+    /* Mascot in header and optional large version */
+    .brand .mascot{ height:28px; width:auto; margin-left:8px }
+    .mascotLarge{ width:min(280px, 40%); display:block; margin:8px auto 0; border-radius:8px }
+
+
+    /* Sticky ribbon */
     .sticky{position:sticky; top:0; z-index:25; background:#f8fffb; border-bottom:1px solid var(--border);
             display:flex; align-items:center; justify-content:center; gap:12px; padding:10px 16px; transition: all .25s ease}
     .sticky.collapsed{justify-content:space-between; padding:6px 12px; font-size:12px}
     .stickyBtn{display:inline-flex; align-items:center; gap:8px; background:var(--mint); color:#fff; padding:8px 12px; border-radius:999px; text-decoration:none; font-weight:700}
     .sticky.collapsed .stickyBtn{padding:6px 10px}
-    .fab{position:fixed; right:18px; bottom:18px; background:var(--mint); color:#fff; border:none; border-radius:999px;
-         padding:12px 14px; font-weight:800; box-shadow:0 12px 24px rgba(0,0,0,.18); cursor:pointer; opacity:0; transform: translateY(8px);
-         transition: opacity .2s ease, transform .2s ease}
-    .fab.show{opacity:1; transform:none}
 
     /* Status area */
     .sub{color:var(--muted);font-size:12px;margin-top:4px}
@@ -66,41 +67,120 @@
     .src{margin-top:6px;font-size:12px}
     details.sources{margin-top:18px;border:1px solid var(--border);border-radius:12px;padding:12px;background:#fff}
     details.sources summary{cursor:pointer;font-weight:600}
+    /* Impacted collapsible */
+    details.impacted{margin-top:12px;border:1px solid var(--border);border-radius:12px;padding:12px;background:#fff}
+    details.impacted summary{cursor:pointer;font-weight:600}
+    .impactedNote{font-size:12px;color:var(--muted);margin:6px 0 10px}
     .sources ul{margin:8px 0 0;padding:0;list-style:none;columns:2;gap:12px}
     .sources li{break-inside:avoid;padding:4px 0}
     .hidden{display:none!important}
 
     /* Guidance + Calls-to-action */
-    .notice{margin:12px 0 18px;padding:12px;border:1px solid var(--border);border-radius:12px;background:#fff;box-shadow:var(--shadow)}
+    .notice{margin:0 0 12px;padding:0;border:none;border-radius:0;background:transparent;box-shadow:none}
     .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:12px 0}
     .step{border:1px solid var(--border);border-radius:12px;padding:12px;background:#fff;box-shadow:var(--shadow)}
     .step h3{margin:0 0 6px;font-size:14px}
-    .step p{margin:0;color:var(--muted);font-size:12px}
+    /* spacing for buttons placed under explanatory text */
+    .step .btnBrand{display:inline-block; margin-top:8px;}
 
     .ctaGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-top:12px}
     .btnBrand{appearance:none;border:none;border-radius:12px;padding:12px 16px;color:#fff;background:var(--mint);font-weight:700;cursor:pointer;transition:transform .08s ease, box-shadow .2s ease, filter .15s ease;box-shadow:0 6px 18px rgba(0,168,143,.22)}
     .btnBrand:hover{transform:translateY(-1px);filter:brightness(.98);box-shadow:0 10px 22px rgba(0,168,143,.28)}
     .btnBrand:focus-visible{outline:3px solid rgba(0,168,143,.3);outline-offset:2px}
 
-    /* micro animations */
-    .reveal{opacity:0;transform:translateY(8px);transition:opacity .5s ease, transform .5s ease}
-    .reveal.in{opacity:1;transform:none}
+    /* About page */
+    .lead{color:var(--muted); margin:0 0 10px}
+    .bullets{margin:0; padding-left:18px; color:var(--ink); font-size:14px}
+    .callout{border:1px solid var(--border); background:#fff; border-radius:12px; padding:12px; box-shadow:var(--shadow); margin:12px 0}
+    .people{display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:12px}
+    .person{border:1px solid var(--border); background:#fff; border-radius:12px; padding:12px; box-shadow:var(--shadow)}
+    .person .pname{font-weight:700}
+    .person .pmeta{font-size:12px; color:var(--muted); margin-top:4px}
 
     footer{border-top:1px solid var(--border);margin-top:18px}
     footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;font-size:12px;color:var(--muted)}
+
+    /* ---------- HERO ---------- */
+.hero{
+  display:grid;
+  grid-template-columns: 1.2fr .8fr;
+  gap:20px;
+  align-items:center;
+  margin:14px 0 18px;
+  padding:18px;
+  border:1px solid var(--border);
+  border-radius:16px;
+  background:linear-gradient(140deg, #f8fffb 0%, #ffffff 60%);
+  box-shadow: var(--shadow);
+}
+@media (max-width: 820px){ .hero{ grid-template-columns: 1fr; } }
+
+.heroTitle{ margin:0 0 6px; font-size:22px; letter-spacing:.2px }
+.heroLead{ margin:0 0 10px; color:var(--muted) }
+.ctaRow{ display:flex; gap:10px; flex-wrap:wrap }
+.heroArt{ display:flex; justify-content:center; align-items:center }
+.mascot{ width:100%; max-width:360px; height:auto; }
+
+/* motion */
+@keyframes roll { to { transform: rotate(360deg); } }
+@keyframes puff {
+  0%   { opacity:0; transform: translateY(0) scale(.6); }
+  35%  { opacity:1; }
+  100% { opacity:0; transform: translateY(-26px) scale(1.1); }
+}
+.wheel{ transform-origin: center; animation: roll 2.2s linear infinite; }
+.steam circle{
+  fill:#d8f3ee;
+  animation: puff 2.4s ease-in-out infinite;
+}
+.steam circle:nth-child(2){ animation-delay:.18s }
+.steam circle:nth-child(3){ animation-delay:.36s }
+
+/* respect reduced motion */
+@media (prefers-reduced-motion: reduce){
+  .wheel, .steam circle{ animation: none !important; }
+}
+
+/* ---------- BUTTON VARIANTS ---------- */
+.btnOutline{
+  appearance:none; border:2px solid var(--mint); background:transparent; color:var(--mint);
+  font-weight:700; border-radius:12px; padding:10px 14px; text-decoration:none;
+  display:inline-flex; align-items:center; gap:8px; cursor:pointer;
+}
+.btnOutline:hover{ background:#f2fcfa; }
+.btnOutline:focus-visible{ outline:3px solid rgba(0,168,143,.3); outline-offset:2px; }
+
+.btnGhost{
+  appearance:none; border:1px dashed var(--border); background:var(--chip); color:var(--ink);
+  font-weight:600; border-radius:12px; padding:10px 14px; cursor:pointer;
+}
+.btnGhost:hover{ background:#eef5f3; }
+
+.btnPill{
+  appearance:none; border:none; background:var(--mint); color:#fff; font-weight:700;
+  padding:8px 12px; border-radius:999px; cursor:pointer; box-shadow:0 6px 18px rgba(0,168,143,.22);
+}
+.btnPill:hover{ transform: translateY(-1px); filter:brightness(.98); box-shadow:0 10px 22px rgba(0,168,143,.28); }
+.btnPill:focus-visible{ outline:3px solid rgba(0,168,143,.3); outline-offset:2px; }
+
+
   </style>
 </head>
 <body>
   <header>
     <div class="wrap">
-      <div class="brand">
-        <img src="/logo.svg" alt="Trainline logo" />
-        <h1>TECHSUP</h1>
-      </div>
+
+<div class="brand">
+  <img src="/logo.svg" alt="Trainline logo" />
+  <img src="/mascot-techsup.png" class="mascot" alt="TECHSUP mascot" loading="lazy" decoding="async" />
+  <h1>TECHSUP</h1>
+</div>
+
       <div class="sub" id="updated">Last updated: —</div>
       <nav class="tabs" id="tabs">
         <button class="tab active" data-target="#help">Get Help</button>
         <button class="tab" data-target="#status">Services Status</button>
+        <button class="tab" data-target="#about">About TECHSUP</button>
       </nav>
     </div>
   </header>
@@ -135,15 +215,106 @@
   <!-- HELP PANEL -->
   <section class="panel" id="help">
     <div class="wrap">
-      <h2>Get help, step by step</h2>
+      <!-- HERO -->
+<section class="hero reveal" aria-label="Tech Support hero">
+  <div class="heroText">
+    <h2 class="heroTitle">Tech help, on track.</h2>
+    <p class="heroLead">Check status, ask the chatbot, or raise a ticket. Faster than waiting for “have you tried turning it off and on again.”</p>
+    <div class="ctaRow">
+      <button class="btnBrand" id="openGptBtnHero" type="button" aria-label="Open Chatbot Assistant">
+        Ask our Chatbot Assistant
+      </button>
+      <a class="btnOutline" id="ctaStatus" href="#status" aria-label="View Services Status">View status</a>
+    </div>
+  </div>
 
+  <div class="heroArt" aria-hidden="true">
+    <!-- Inline SVG mascot: accessible, brand-aware, tiny animations -->
+    <svg class="mascot" viewBox="0 0 300 180" role="img" aria-labelledby="mascotTitle">
+      <title id="mascotTitle">Friendly helper train</title>
+      <defs>
+        <linearGradient id="mintGlow" x1="0" x2="1">
+          <stop offset="0" stop-color="var(--mint)" stop-opacity="1"/>
+          <stop offset="1" stop-color="var(--mint)" stop-opacity=".6"/>
+        </linearGradient>
+        <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+          <feDropShadow dx="0" dy="6" stdDeviation="8" flood-opacity=".18"/>
+        </filter>
+      </defs>
+
+      <!-- track -->
+      <rect x="0" y="150" width="300" height="6" fill="#dde5eb"/>
+      <g opacity=".5">
+        <rect x="10" y="156" width="28" height="3" rx="1.5" fill="#cbd5df"/>
+        <rect x="50" y="156" width="28" height="3" rx="1.5" fill="#cbd5df"/>
+        <rect x="90" y="156" width="28" height="3" rx="1.5" fill="#cbd5df"/>
+        <rect x="130" y="156" width="28" height="3" rx="1.5" fill="#cbd5df"/>
+        <rect x="170" y="156" width="28" height="3" rx="1.5" fill="#cbd5df"/>
+        <rect x="210" y="156" width="28" height="3" rx="1.5" fill="#cbd5df"/>
+        <rect x="250" y="156" width="28" height="3" rx="1.5" fill="#cbd5df"/>
+      </g>
+
+      <!-- steam -->
+      <g class="steam">
+        <circle cx="188" cy="38" r="8" />
+        <circle cx="205" cy="24" r="6" />
+        <circle cx="222" cy="14" r="5" />
+      </g>
+
+      <!-- loco -->
+      <g filter="url(#softShadow)">
+        <!-- cabin -->
+        <rect x="70" y="70" width="80" height="44" rx="10" fill="#ffffff" stroke="var(--mint)" stroke-width="3"/>
+        <rect x="80" y="78" width="40" height="16" rx="6" fill="#e8f7f4"/>
+        <!-- face window -->
+        <rect x="124" y="78" width="20" height="16" rx="6" fill="#e8f7f4"/>
+
+        <!-- boiler -->
+        <rect x="150" y="82" width="86" height="34" rx="12" fill="url(#mintGlow)" stroke="var(--mint)" stroke-width="2"/>
+
+        <!-- nose -->
+        <rect x="236" y="90" width="20" height="18" rx="9" fill="var(--mint)"/>
+
+        <!-- smiley face -->
+        <circle cx="107" cy="104" r="10" fill="#fff" stroke="#0b0d10" stroke-width="2"/>
+        <circle cx="136" cy="104" r="10" fill="#fff" stroke="#0b0d10" stroke-width="2"/>
+        <circle cx="107" cy="104" r="3" fill="#0b0d10"/>
+        <circle cx="136" cy="104" r="3" fill="#0b0d10"/>
+        <path d="M110 115 Q121 122 133 115" fill="none" stroke="#0b0d10" stroke-width="2" stroke-linecap="round"/>
+
+        <!-- chimney -->
+        <rect x="182" y="58" width="16" height="24" rx="3" fill="#0b0d10"/>
+      </g>
+
+      <!-- wheels -->
+      <g class="wheelGroup">
+        <g class="wheel" transform="translate(102,140)">
+          <circle r="16" fill="#fff" stroke="#0b0d10" stroke-width="3"/>
+          <circle r="4" fill="var(--mint)"/>
+          <rect x="-2" y="-15" width="4" height="10" rx="2" fill="var(--mint)"/>
+        </g>
+        <g class="wheel" transform="translate(152,140)">
+          <circle r="16" fill="#fff" stroke="#0b0d10" stroke-width="3"/>
+          <circle r="4" fill="var(--mint)"/>
+          <rect x="-2" y="-15" width="4" height="10" rx="2" fill="var(--mint)"/>
+        </g>
+        <g class="wheel" transform="translate(202,140)">
+          <circle r="16" fill="#fff" stroke="#0b0d10" stroke-width="3"/>
+          <circle r="4" fill="var(--mint)"/>
+          <rect x="-2" y="-15" width="4" height="10" rx="2" fill="var(--mint)"/>
+        </g>
+      </g>
+    </svg>
+  </div>
+</section>
       <div class="notice reveal" id="statusAdvisory" aria-live="polite"></div>
 
       <!-- Impacted vendor cards appear here when issues exist -->
-      <div id="impactedWrap" class="reveal hidden" aria-label="Currently impacted services">
-        <h3 style="margin:0 0 8px;font-size:14px">Currently impacted</h3>
+      <details id="impactedWrap" class="reveal hidden impacted" aria-label="Currently impacted services">
+        <summary>Currently impacted</summary>
+        <div class="impactedNote" id="impactedNote"></div>
         <section class="grid" id="impactedCards"></section>
-      </div>
+      </details>
 
       <div class="steps">
         <div class="step reveal">
@@ -151,9 +322,9 @@
           <p>If any tool shows Outage or Degraded, it’s likely the cause. No ticket needed. Follow the vendor link for updates.</p>
         </div>
         <div class="step reveal">
-          <h3>2) Ask TECHSUP Chat</h3>
+          <h3>2) Ask our Chatbot Assistant</h3>
           <p>Click the button to open the TECHSUP helper in a new tab. If it doesn’t solve it, come back and raise a ticket.</p>
-          <p style="margin-top:8px"><a class="btnBrand" id="openGpt" href="#">Open TECHSUP Chat</a></p>
+          <p><button class="btnBrand" id="openGptBtn" type="button">Ask our Chatbot Assistant</button></p>
         </div>
         <div class="step reveal">
           <h3>3) Raise a ticket</h3>
@@ -168,15 +339,73 @@
     </div>
   </section>
 
+  <!-- ABOUT PANEL -->
+  <section class="panel hidden" id="about">
+    <div class="wrap">
+      <h2>Tech Support @ Trainline</h2>
+      <p class="lead">Welcome to TECHSUP — your go-to for IT troubleshooting and support.</p>
+
+      <div class="callout">
+        <ul class="bullets">
+          <li>Get practical IT tips and best practices.</li>
+          <li>Ask any IT question and get help from the team or colleagues.</li>
+        </ul>
+      </div>
+
+      <h3 style="margin:14px 0 8px;font-size:14px">Quick reminders</h3>
+      <div class="callout">
+        <ol class="bullets" style="padding-left:18px">
+          <li>Before raising an issue, check our <a href="https://trainline.atlassian.net/wiki/" target="_blank" rel="noreferrer noopener">How-To Guides</a>.</li>
+          <li>If it persists, raise a support ticket via:
+            <ul class="bullets" style="margin-top:6px">
+              <li>Email: <a href="mailto:123servicedesk@thetrainline.com">123servicedesk@thetrainline.com</a></li>
+              <li>Portal: <a href="https://trainline.atlassian.net/servicedesk/customer/portal/26" target="_blank" rel="noreferrer noopener">Trainline Service Desk</a></li>
+            </ul>
+          </li>
+          <li>Use 👀 for “message in progress” and ✅ when solved.</li>
+        </ol>
+      </div>
+
+      <h3 style="margin:14px 0 8px;font-size:14px">Meet the team</h3>
+      <div class="people">
+        <a class="person" href="https://trainline.enterprise.slack.com/team/U090KGVB0CX" target="_blank" rel="noreferrer noopener">
+          <div class="pname">Manager</div>
+          <div class="pmeta">Open Slack profile</div>
+        </a>
+
+        <a class="person" href="https://trainline.slack.com/team/UCZ0CNU80" target="_blank" rel="noreferrer noopener">
+          <div class="pname">London office</div>
+          <div class="pmeta">Open Slack profile</div>
+        </a>
+        <a class="person" href="https://trainline.slack.com/team/U05FHPC2F16" target="_blank" rel="noreferrer noopener">
+          <div class="pname">London office</div>
+          <div class="pmeta">Open Slack profile</div>
+        </a>
+
+        <a class="person" href="https://trainline.slack.com/team/ULDV0D276" target="_blank" rel="noreferrer noopener">
+          <div class="pname">Paris office</div>
+          <div class="pmeta">Open Slack profile</div>
+        </a>
+
+        <a class="person" href="https://trainline.slack.com/team/U7YR52KJQ" target="_blank" rel="noreferrer noopener">
+          <div class="pname">Edinburgh office</div>
+          <div class="pmeta">Open Slack profile</div>
+        </a>
+
+        <a class="person" href="https://trainline.slack.com/team/U040A4EENJX" target="_blank" rel="noreferrer noopener">
+          <div class="pname">Barcelona office</div>
+          <div class="pmeta">Open Slack profile</div>
+        </a>
+      </div>
+    </div>
+  </section>
+
   <footer>
     <div class="wrap">
-      <div>Built as static HTML + one JSON endpoint. Zero VMs, zero drama.</div>
-      <div><a href="/api/status" target="_blank" rel="noreferrer noopener">Status API</a></div>
+      <div>Support: <a href="mailto:123servicedesk@thetrainline.com">123servicedesk@thetrainline.com</a> • Portal: <a href="https://trainline.atlassian.net/servicedesk/customer/portal/26" target="_blank" rel="noreferrer noopener">Service Desk</a> • Slack: <a href="https://slack.com/app_redirect?channel=help-tech-support" target="_blank" rel="noreferrer noopener">#help-tech-support</a></div>
+      <div>Team inbox: <a href="mailto:jediteam@thetrainline.com">jediteam@thetrainline.com</a></div>
     </div>
   </footer>
-
-  <!-- Floating Chat Button -->
-  <button id="fabChat" class="fab" aria-label="Open TECHSUP Chat">Chat</button>
 
   <script>
     const BRAND = '#00A88F';
@@ -200,11 +429,10 @@
       const h = document.querySelector(target+' h2'); if(h) h.focus?.();
     });
 
-    // Sticky collapse + Floating chat visibility
+    // Sticky collapse
     window.addEventListener('scroll', ()=>{
       const y = window.scrollY || document.documentElement.scrollTop;
       document.getElementById('sticky').classList.toggle('collapsed', y > 100);
-      document.getElementById('fabChat').classList.toggle('show', y > 240);
     });
 
     // ---------- Status loader (with fallback) ----------
@@ -238,18 +466,18 @@
         const cls = statusClass(svc.status);
         if(cls==='degraded' || cls==='outage') bad.push(svc);
         const card = document.createElement('article');
-        card.className = `card item ${cls}`;
+        card.className = card item ${cls};
         card.dataset.status = cls;
-        const linkHtml = svc.link ? `<div class="src">Source: <a href="${svc.link}" target="_blank" rel="noreferrer noopener">${new URL(svc.link).host}</a></div>` : '';
+        const linkHtml = svc.link ? <div class="src">Source: <a href="${svc.link}" target="_blank" rel="noreferrer noopener">${new URL(svc.link).host}</a></div> : '';
         if(svc.link) links.set(svc.name, svc.link);
-        card.innerHTML = `
+        card.innerHTML = 
           <div class="dot ${cls}" title="${cls}"></div>
           <div>
-            <div class="name">${svc.link ? `<a href="${svc.link}" target="_blank" rel="noreferrer noopener">${svc.name}</a>` : svc.name}</div>
+            <div class="name">${svc.link ? <a href="${svc.link}" target="_blank" rel="noreferrer noopener">${svc.name}</a> : svc.name}</div>
             <div class="note">${svc.note ? svc.note : ''}</div>
             ${linkHtml}
           </div>
-        `;
+        ;
         elCards.appendChild(card);
       });
 
@@ -267,7 +495,7 @@
       elSourcesList.innerHTML = '';
       links.forEach((url, name)=>{
         const li=document.createElement('li');
-        li.innerHTML = `<a href="${url}" target="_blank" rel="noreferrer noopener">${name}</a>`;
+        li.innerHTML = <a href="${url}" target="_blank" rel="noreferrer noopener">${name}</a>;
         elSourcesList.appendChild(li);
       });
       elSourcesBox.classList.toggle('hidden', links.size===0);
@@ -278,38 +506,44 @@
       const impactedCards = document.getElementById('impactedCards');
       if (bad.length) {
         const list = bad.map(s=>s.name).join(', ');
-        adv.innerHTML = `<strong>${bad.length} vendor issue${bad.length>1?'s':''} detected:</strong> ${list}. If your problem relates to these, no ticket is needed. Follow the vendor pages for ETA.`;
+        adv.innerHTML = <strong>${bad.length} vendor issue${bad.length>1?'s':''} detected:</strong> ${list}.;
         impactedWrap.classList.remove('hidden');
+        impactedWrap.open = true;
+        const impactedNote = document.getElementById('impactedNote');
+        if (impactedNote) impactedNote.textContent = 'If your problem relates to these, no ticket is needed. Follow the vendor pages for ETA.';
         impactedCards.innerHTML = '';
         bad.forEach(svc=>{
           const cls = statusClass(svc.status);
           const el = document.createElement('article');
-          el.className = `card ${cls}`;
-          el.innerHTML = `
+          el.className = card ${cls};
+          el.innerHTML = 
             <div class="dot ${cls}" title="${cls}"></div>
             <div>
-              <div class="name">${svc.link ? `<a href="${svc.link}" target="_blank" rel="noreferrer noopener">${svc.name}</a>` : svc.name}</div>
+              <div class="name">${svc.link ? <a href="${svc.link}" target="_blank" rel="noreferrer noopener">${svc.name}</a> : svc.name}</div>
               <div class="note">${svc.note || ''}</div>
-              ${svc.link ? `<div class="src">Source: <a href="${svc.link}" target="_blank" rel="noreferrer noopener">${new URL(svc.link).host}</a></div>` : ''}
-            </div>`;
+              ${svc.link ? <div class="src">Source: <a href="${svc.link}" target="_blank" rel="noreferrer noopener">${new URL(svc.link).host}</a></div> : ''}
+            </div>;
           impactedCards.appendChild(el);
         });
       } else {
-        adv.textContent = `All monitored vendors are green. If you're still blocked, open TECHSUP Chat, then create a ticket if needed.`;
+        adv.textContent = All monitored vendors are green. If you're still blocked, ask our Chatbot Assistant, then create a ticket if needed.;
         impactedWrap.classList.add('hidden');
+        impactedWrap.open = false;
         impactedCards.innerHTML = '';
+        const impactedNote = document.getElementById('impactedNote');
+        if (impactedNote) impactedNote.textContent = '';
       }
 
       // Sticky ribbon contents
       const stickyText = document.getElementById('stickyText');
       const stickyBtn = document.getElementById('stickyBtn');
       if (bad.length) {
-        stickyText.textContent = `${bad.length} vendor issue${bad.length>1?'s':''} detected`;
+        stickyText.textContent = ${bad.length} vendor issue${bad.length>1?'s':''} detected;
         stickyBtn.textContent = 'View impacted';
-        stickyBtn.href = '#help';
+        stickyBtn.href = '#status';
       } else {
         stickyText.textContent = 'All systems normal';
-        stickyBtn.textContent = 'Open TECHSUP Chat';
+        stickyBtn.textContent = 'Get help';
         stickyBtn.href = '#help';
       }
     }
@@ -320,13 +554,24 @@
       const h = Math.min(800, window.screen.height - 120);
       const left = window.screenX + (window.outerWidth - w) / 2;
       const top = window.screenY + (window.outerHeight - h) / 2;
-      const win = window.open(url, '_blank', `popup=yes,width=${w},height=${h},left=${left},top=${top}`);
+      const win = window.open(url, '_blank', popup=yes,width=${w},height=${h},left=${left},top=${top});
       if(!win) window.open(url, '_blank', 'noopener,noreferrer');
     }
-    // Open GPT from CTA and FAB
+
+    // Open GPT from CTA
     const openGpt = ()=> openPopup(GPT_URL);
-    document.getElementById('openGpt').addEventListener('click', (e)=>{ e.preventDefault(); openGpt(); });
-    document.getElementById('fabChat').addEventListener('click', openGpt);
+    document.getElementById('openGptBtn').addEventListener('click', openGpt);
+
+    // Make sticky button switch to Services Status when appropriate
+    document.getElementById('stickyBtn').addEventListener('click', (e)=>{
+      const href = e.currentTarget.getAttribute('href');
+      if(href === '#status'){
+        e.preventDefault();
+        const statusTab = Array.from(document.querySelectorAll('#tabs .tab')).find(b=>b.dataset.target === '#status');
+        if(statusTab){ statusTab.click(); }
+        document.getElementById('status').scrollIntoView({ behavior:'smooth', block:'start' });
+      }
+    });
 
     // Ticket buttons
     const ticketGrid = document.getElementById('ticketGrid');
@@ -335,7 +580,7 @@
       b.className = 'btnBrand reveal';
       b.textContent = t.label;
       b.onclick = ()=> openPopup(t.url);
-      b.style.transitionDelay = `${Math.min(i*0.06, .4)}s`;
+      b.style.transitionDelay = ${Math.min(i*0.06, .4)}s;
       ticketGrid.appendChild(b);
     });
 

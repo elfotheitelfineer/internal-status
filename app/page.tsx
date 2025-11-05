@@ -284,7 +284,7 @@ export default function Page() {
       {/* Footer */}
       <footer>
         <div className="wrap">
-          <div>Built on Next.js + one JSON endpoint. Zero VMs, zero drama.</div>
+          <div>Built by Elfo the IT Elfineer</div>
           <div><a href={sourceUrl} target="_blank" rel="noreferrer noopener">Status API</a></div>
         </div>
       </footer>

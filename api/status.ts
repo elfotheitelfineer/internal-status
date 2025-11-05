@@ -1,10 +1,12 @@
-// /api/status.ts — Vercel Serverless Function (Node 18+)
-import type { VercelRequest, VercelResponse } from '@vercel/node';
+export const config = { runtime: 'edge' };
 
-export default async function handler(_req: VercelRequest, res: VercelResponse) {
+export default async function handler(_req: Request) {
   const ttl = 60;
-  res.setHeader('content-type', 'application/json');
-  res.setHeader('cache-control', `public, max-age=0, s-maxage=${ttl}`);
+  const headers = {
+    'content-type': 'application/json',
+    'cache-control': `public, max-age=0, s-maxage=${ttl}`,
+    'access-control-allow-origin': '*'
+  };
 
   async function fromStatuspage(origin: string, name: string, link = origin) {
     const r = await fetch(`${origin.replace(/\/$/, '')}/api/v2/summary.json`);
@@ -37,12 +39,10 @@ export default async function handler(_req: VercelRequest, res: VercelResponse) 
     ['Atlassian (Jira/Confluence)', fromStatuspage('https://status.atlassian.com', 'Atlassian (Jira/Confluence)'), 'https://status.atlassian.com/'],
     ['Zoom', fromStatuspage('https://status.zoom.us', 'Zoom'), 'https://status.zoom.us/'],
     ['Ashby', fromStatuspage('https://status.ashbyhq.com', 'Ashby'), 'https://status.ashbyhq.com/'],
-    ['Bob (HiBob)', fromStatuspage('https://status.hibob.io', 'Bob (HiBob)'), 'https://status.hibob.io/'],
     ['Slack', fromSlack(), 'https://slack-status.com/'],
     ['incident.io', fromStatuspage('https://status.incident.io', 'incident.io').catch(() => ({ name: 'incident.io', status: 'unknown', note: 'See vendor page', link: 'https://status.incident.io/' })), 'https://status.incident.io/'],
     ['Amazon Connect (us-east-1)', fromRss('https://status.aws.amazon.com/rss/connect-us-east-1.rss', 'Amazon Connect (us-east-1)', 'https://health.aws.amazon.com/health/status'), 'https://health.aws.amazon.com/health/status']
   ];
-
   const settled = await Promise.allSettled(tasks.map(([, p]) => p));
   const services = settled.map((r, i) =>
     r.status === 'fulfilled'
@@ -50,9 +50,10 @@ export default async function handler(_req: VercelRequest, res: VercelResponse) 
       : { name: tasks[i][0], status: 'unknown', note: 'Fetch failed', link: tasks[i][2] }
   );
 
-  res.status(200).send(JSON.stringify({
+  const body = JSON.stringify({
     banner: 'Live vendor status (auto-refreshed).',
     lastUpdatedISO: new Date().toISOString(),
     services
-  }));
+  });
+  return new Response(body, { headers });
 }

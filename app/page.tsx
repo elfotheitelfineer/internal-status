@@ -65,21 +65,23 @@ export default function Page() {
     return m;
   }, [all]);
 
-  // Sticky + FAB
+  // Sticky + FAB + header shadow on scroll
   useEffect(() => {
     const onScroll = () => {
       const y = window.scrollY || document.documentElement.scrollTop;
       const sticky = document.getElementById("sticky");
       const fab = document.getElementById("fabChat");
+      const hdr = document.querySelector("header");
       sticky?.classList.toggle("collapsed", y > 100);
       fab?.classList.toggle("show", y > 240);
+      hdr?.classList.toggle("scrolled", y > 4);
     };
     window.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Reveal-on-scroll animations
+  // Reveal-on-scroll animations (extended)
   const didReveal = useRef(false);
   useEffect(() => {
     if (didReveal.current) return;
@@ -90,6 +92,21 @@ export default function Page() {
     document.querySelectorAll(".reveal").forEach(el => io.observe(el));
     didReveal.current = true;
     return () => io.disconnect();
+  }, []);
+
+  // Hero parallax variable (CSS reads --heroProgress)
+  useEffect(() => {
+    const hero = document.getElementById("hero");
+    if (!hero) return;
+    const onScroll = () => {
+      const rect = hero.getBoundingClientRect();
+      const total = Math.max(rect.height, 1);
+      const t = Math.max(0, Math.min(1, (window.innerHeight - rect.top) / (window.innerHeight + total)));
+      document.documentElement.style.setProperty("--heroProgress", String(Number.parseFloat(t.toFixed(4))));
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   const openPopup = (url: string) => {
@@ -105,15 +122,28 @@ export default function Page() {
     ? new Date(data.lastUpdatedISO).toLocaleString()
     : "—";
 
-  // Sticky contents derived from status
-const hasIncidents = bad.length > 0;
-
-const stickyText = hasIncidents
-  ? `${bad.length} vendor issue${bad.length > 1 ? "s" : ""} detected`
-  : "All systems normal";
+  const hasIncidents = bad.length > 0;
+  const stickyText = hasIncidents
+    ? `${bad.length} vendor issue${bad.length > 1 ? "s" : ""} detected`
+    : "All systems normal";
 
   return (
     <>
+      {/* Hero */}
+      <section id="hero" className="hero">
+        <div className="gridlines" aria-hidden="true"></div>
+        <div className="orb f1"></div>
+        <div className="orb f2"></div>
+        <div className="wrap">
+          <h1 className="headline reveal scale">Help & Status, nicely</h1>
+          <p className="subhead reveal right">A lightweight hub to check vendor incidents fast, ask TECHSUP for fixes, and file the right ticket when you actually need to.</p>
+          <div className="heroCtas reveal">
+            <button className="btnPrimary" onClick={() => openPopup(GPT_URL)}>Open TECHSUP Chat</button>
+            <a className="btnGhost" href="#help" onClick={(e)=>{e.preventDefault(); document.getElementById("help")?.scrollIntoView({behavior:"smooth", block:"start"});}}>How it works</a>
+          </div>
+        </div>
+      </section>
+
       {/* Header */}
       <header>
         <div className="wrap">
@@ -141,38 +171,35 @@ const stickyText = hasIncidents
       </header>
 
       {/* Sticky ribbon */}
-<div id="sticky" className="sticky" role="status" aria-live="polite">
-  <span id="stickyText">{stickyText}</span>
+      <div id="sticky" className="sticky" role="status" aria-live="polite">
+        <span id="stickyText">{stickyText}</span>
 
-  {hasIncidents ? (
-    // Go to Services Status panel and scroll into view
-    <a
-      id="stickyBtn"
-      href="#status"
-      className="stickyBtn"
-      onClick={(e) => {
-        e.preventDefault();
-        setActiveTab("#status");
-        document.getElementById("status")?.scrollIntoView({ behavior: "smooth", block: "start" });
-      }}
-    >
-      View impacted
-    </a>
-  ) : (
-    // Open chatbot in a centered popup (same as step 2)
-    <a
-      id="stickyBtn"
-      href={GPT_URL}
-      target="_blank"
-      rel="noreferrer noopener"
-      className="stickyBtn"
-      onClick={(e) => { e.preventDefault(); openPopup(GPT_URL); }}
-    >
-      Open TECHSUP Chat
-    </a>
-  )}
-</div>
-
+        {hasIncidents ? (
+          <a
+            id="stickyBtn"
+            href="#status"
+            className="stickyBtn"
+            onClick={(e) => {
+              e.preventDefault();
+              setActiveTab("#status");
+              document.getElementById("status")?.scrollIntoView({ behavior: "smooth", block: "start" });
+            }}
+          >
+            View impacted
+          </a>
+        ) : (
+          <a
+            id="stickyBtn"
+            href={GPT_URL}
+            target="_blank"
+            rel="noreferrer noopener"
+            className="stickyBtn"
+            onClick={(e) => { e.preventDefault(); openPopup(GPT_URL); }}
+          >
+            Open TECHSUP Chat
+          </a>
+        )}
+      </div>
 
       {/* STATUS PANEL */}
       <section className={`panel ${activeTab === "#status" ? "" : "hidden"}`} id="status">
@@ -203,7 +230,7 @@ const stickyText = hasIncidents
               const cls = statusClass(svc.status);
               const host = (() => { try { return svc.link ? new URL(svc.link).host : ""; } catch { return ""; } })();
               return (
-                <article className={`card item ${cls}`} data-status={cls} key={i}>
+                <article className={`card item reveal scale ${cls}`} data-status={cls} key={i}>
                   <div className={`dot ${cls}`} title={cls}></div>
                   <div>
                     <div className="name">
@@ -235,7 +262,7 @@ const stickyText = hasIncidents
       {/* HELP PANEL */}
       <section className={`panel ${activeTab === "#help" ? "" : "hidden"}`} id="help">
         <div className="wrap">
-          <h2>Get help, step by step</h2>
+          <h2 className="reveal">Get help, step by step</h2>
 
           <div className="notice reveal" id="statusAdvisory" aria-live="polite">
             {bad.length
@@ -256,7 +283,7 @@ const stickyText = hasIncidents
                 const cls = statusClass(svc.status);
                 const host = (() => { try { return svc.link ? new URL(svc.link).host : ""; } catch { return ""; } })();
                 return (
-                  <article className={`card ${cls}`} key={`bad-${i}`}>
+                  <article className={`card reveal ${cls}`} key={`bad-${i}`}>
                     <div className={`dot ${cls}`} title={cls}></div>
                     <div>
                       <div className="name">
@@ -265,11 +292,11 @@ const stickyText = hasIncidents
                           : svc.name}
                       </div>
                       <div className="note">{svc.note || ""}</div>
-{svc.link ? (
-  <div className="src">Source: <a href={svc.link} target="_blank" rel="noreferrer noopener">
-    {new URL(svc.link).host}
-  </a></div>
-) : null}
+                      {svc.link ? (
+                        <div className="src">Source: <a href={svc.link} target="_blank" rel="noreferrer noopener">
+                          {new URL(svc.link).host}
+                        </a></div>
+                      ) : null}
                     </div>
                   </article>
                 );
@@ -285,12 +312,12 @@ const stickyText = hasIncidents
             <div className="step reveal">
               <h3>2) Ask TECHSUP Chat</h3>
               <p>Click the button to open the TECHSUP helper in a new tab. If it doesn’t solve it, come back and raise a ticket.</p>
-<p className="ctaRow">
-  <a className="btnBrand" id="openGpt" href="#" onClick={(e)=>{e.preventDefault(); openPopup(GPT_URL);}}>
-    Open TECHSUP Chat
-  </a>
-</p>            
-</div>
+              <p className="ctaRow">
+                <a className="btnBrand" id="openGpt" href="#" onClick={(e)=>{e.preventDefault(); openPopup(GPT_URL);}}>
+                  Open TECHSUP Chat
+                </a>
+              </p>
+            </div>
             <div className="step reveal">
               <h3>3) Raise a ticket</h3>
               <p>Pick the right request type so it lands with the right team.</p>

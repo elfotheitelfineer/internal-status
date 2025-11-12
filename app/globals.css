@@ -12,6 +12,13 @@
   --card:#fff;
   --hover:#f5f7fa;
   --shadow:0 8px 24px rgba(0,0,0,.06);
+  /* New */
+  --bgA:#0b0d10;
+  --bgB:#10141a;
+  --gradA:#00F5A0;
+  --gradB:#00D9F5;
+  --ring:rgba(0,168,143,.35);
+  --heroProgress:0; /* 0..1 set by JS */
 }
 
 /* reset-ish */
@@ -20,7 +27,46 @@ html,body{margin:0}
 body{background:var(--paper);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
 a{color:#0c6;text-decoration:underline dotted}
 
-header{border-bottom:1px solid var(--border);background:#fdfefe;position:sticky;top:0;z-index:20}
+/* ===== New: Hero ===== */
+.hero{position:relative; overflow:hidden; background:
+  radial-gradient(1200px 600px at 20% -10%,rgba(0,217,245,.18),transparent 55%),
+  radial-gradient(900px 500px at 85% 10%,rgba(0,245,160,.18),transparent 55%),
+  linear-gradient(180deg,var(--bgA),var(--bgB));
+  color:#f6fffb;
+  min-height:70vh; display:grid; place-items:center; isolation:isolate;
+}
+.hero .wrap{max-width:1100px;margin:0 auto;padding:80px 24px 64px}
+.headline{font-size:clamp(38px,6vw,72px); line-height:1.05; margin:0 0 14px; letter-spacing:-.5px;
+  background:linear-gradient(90deg,var(--gradA),var(--gradB));
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+.subhead{max-width:680px;color:#cfe9e2;font-size:clamp(16px,2.2vw,18px);margin:0 0 22px}
+.heroCtas{display:flex; gap:10px; flex-wrap:wrap}
+.btnPrimary{appearance:none;border:none;border-radius:14px;padding:14px 18px;font-weight:800;cursor:pointer;
+  color:#00110e;background:linear-gradient(90deg,var(--gradA),var(--gradB));
+  box-shadow:0 12px 26px rgba(0,217,245,.2), inset 0 0 0 1px rgba(255,255,255,.18);
+  transition:transform .08s ease, box-shadow .2s ease, filter .15s ease}
+.btnPrimary:hover{transform:translateY(-1px);filter:brightness(.98); box-shadow:0 18px 34px rgba(0,217,245,.28)}
+.btnGhost{appearance:none;border:1px solid rgba(255,255,255,.22);background:transparent;color:#def7f2;
+  border-radius:14px;padding:14px 18px;font-weight:700;cursor:pointer}
+
+/* Decorative orbs */
+.orb{position:absolute; width:240px; height:240px; border-radius:50%; filter:blur(24px); opacity:.35;
+  background:radial-gradient(circle at 30% 30%, rgba(255,255,255,.8), rgba(255,255,255,0) 60%);
+  transform:translate3d(var(--x,0), var(--y,0), 0) scale(var(--s,1)); will-change:transform}
+.orb.f1{top:-40px; left:-60px; --x:calc((var(--heroProgress) - .2) * 40px); --y:calc((var(--heroProgress)) * 20px)}
+.orb.f2{bottom:-80px; right:-60px; --x:calc((var(--heroProgress)) * -30px)}
+
+/* Subtle grid */
+.gridlines{position:absolute; inset:0; background-image:
+  linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px),
+  linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px);
+  background-size: 40px 40px; mix-blend-mode:soft-light; pointer-events:none}
+
+/* ===== Site header tweaks stay the same but gain subtle border glow on scroll ===== */
+header{border-bottom:1px solid var(--border);background:#fdfefe;position:sticky;top:0;z-index:20; backdrop-filter:saturate(1.1) blur(4px)}
+header.scrolled{box-shadow:0 6px 18px rgba(0,0,0,.06)}
+
 .wrap{max-width:1100px;margin:0 auto;padding:16px 24px}
 .brand{display:flex;align-items:center;gap:10px}
 .brand img{height:22px}
@@ -53,8 +99,8 @@ section{padding:18px 24px}
 .chip{cursor:pointer;border:1px solid var(--border);background:var(--chip);padding:8px 10px;border-radius:999px;font-size:12px}
 .chip.active{outline:2px solid #e2f7ef}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
-.card{border:1px solid var(--border);border-radius:14px;padding:14px;background:var(--card);display:flex;gap:10px;align-items:flex-start;box-shadow:var(--shadow)}
-.card:hover{background:var(--hover)}
+.card{border:1px solid var(--border);border-radius:14px;padding:14px;background:var(--card);display:flex;gap:10px;align-items:flex-start;box-shadow:var(--shadow); transition: transform .18s ease, box-shadow .2s ease}
+.card:hover{background:var(--hover); transform: translateY(-2px); box-shadow:0 10px 28px rgba(0,0,0,.08)}
 .dot{width:10px;height:10px;border-radius:50%;margin-top:6px;flex:0 0 auto}
 .dot.ok{background:var(--ok)} .dot.degraded{background:var(--degraded)}
 .dot.outage{background:var(--outage)} .dot.unknown{background:var(--unknown)}
@@ -72,16 +118,25 @@ details.sources summary{cursor:pointer;font-weight:600}
 .step{border:1px solid var(--border);border-radius:12px;padding:12px;background:#fff;box-shadow:var(--shadow)}
 .step h3{margin:0 0 6px;font-size:14px}
 .step p{margin:0;color:var(--muted);font-size:12px}
-/* Give the Step 2 CTA some breathing room */
 .ctaRow { margin-top: 18px; }
 .ctaGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-top:12px}
 .btnBrand{appearance:none;border:none;border-radius:12px;padding:12px 16px;color:#fff;background:var(--mint);font-weight:700;cursor:pointer;transition:transform .08s ease, box-shadow .2s ease, filter .15s ease;box-shadow:0 6px 18px rgba(0,168,143,.22)}
 .btnBrand:hover{transform:translateY(-1px);filter:brightness(.98);box-shadow:0 10px 22px rgba(0,168,143,.28)}
 .btnBrand:focus-visible{outline:3px solid rgba(0,168,143,.3);outline-offset:2px}
 
-/* micro animations */
-.reveal{opacity:0;transform:translateY(8px);transition:opacity .5s ease, transform .5s ease}
-.reveal.in{opacity:1;transform:none}
+/* ===== micro animations ===== */
+.reveal{opacity:0;transform:translateY(8px) scale(.98); filter:blur(6px); transition:opacity .6s ease, transform .6s ease, filter .6s ease;}
+.reveal.in{opacity:1;transform:none; filter:none}
+.reveal.right{transform:translateX(16px) scale(.98)}
+.reveal.right.in{transform:none}
+.reveal.scale{transform:scale(.94)}
+.reveal.scale.in{transform:none}
+
+/* Motion safety */
+@media (prefers-reduced-motion: reduce){
+  .reveal, .reveal.right, .reveal.scale{opacity:1; transform:none; filter:none}
+  .fab, .card, .btnBrand, .btnPrimary{transition:none}
+}
 
 footer{border-top:1px solid var(--border);margin-top:18px}
 footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;font-size:12px;color:var(--muted)}
